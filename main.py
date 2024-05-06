@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from sys import argv
 from datetime import datetime, UTC
 import subprocess
+import requests
 
 
 class Log(BaseModel):
@@ -13,19 +14,19 @@ class Log(BaseModel):
 
 
 def get_public_ip():
-    
+
     dig_output = subprocess.run(
         ["dig", "+short", "myip.opendns.com", "@resolver1.opendns.com"],
         capture_output=True,
         text=True,
     )
-    
+
     if dig_output.returncode != 0:
         raise RuntimeError(dig_output.stderr)
-    
+
     if len(dig_output.stdout) == 0:
         raise RuntimeError("could not get public ip; dig output was empty")
-    
+
     return str.strip(dig_output.stdout)
 
 
@@ -50,6 +51,7 @@ if __name__ == "__main__":
     LOG_FILE = "ddns-log.json"
     start_timestamp = datetime.now(UTC)
     domains = argv[1:]  # skip first argument (name of the script)
+    domains = ["quercusphellos.online"]
 
     # initialize output log record
     log = Log(
@@ -62,8 +64,8 @@ if __name__ == "__main__":
 
     try:
         # confirm incoming data is valid
-        # if len(domains) == 0:
-        #     raise ValueError("specify at least one domain name")
+        if len(domains) == 0:
+            raise ValueError("specify at least one domain name")
 
         # update dns records
         main(domains)
