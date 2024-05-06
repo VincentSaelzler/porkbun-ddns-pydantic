@@ -3,9 +3,12 @@ from sys import argv
 from datetime import datetime, UTC
 
 
-class Person(BaseModel):
-    fn: str
-    ln: str
+class Log(BaseModel):
+    timestamp: datetime
+    success: bool
+    ip_addr: str
+    domains: list[str]
+    message: str
 
 
 def main(domain_names: list[str]):
@@ -18,18 +21,32 @@ def main(domain_names: list[str]):
 
 
 if __name__ == "__main__":
+    
+    LOG_FILE = "ddns-log.json"
 
     # log the start time
-    now_str = datetime.now(UTC).isoformat()
+    # now_str = datetime.now(UTC).isoformat()
+    start_timestamp = datetime.now(UTC)
 
     # get incoming args (list of domain names)
     # skip the first argument (name of the script)
     domain_names = argv[1:]
 
+    o = Log(
+        timestamp=start_timestamp,
+        success=True,
+        ip_addr="",
+        domains=domain_names,
+        message="",
+    )
+
     try:
         main(domain_names)
+        raise Exception("whoops")
     except Exception as e:
-        # create a file to log and debug failures
-        file_path = "DDNS-FAILURE.txt"
-        with open(file_path, "w") as file:
-            file.write(now_str + "\n" + str(e))
+        o.success = False
+        o.message = str(e)
+    finally:
+        # log latest run
+        with open(LOG_FILE, "w") as file:
+            file.write(o.json())
