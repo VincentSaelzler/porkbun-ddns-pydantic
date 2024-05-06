@@ -1,10 +1,13 @@
 import os
-home_directory = os.environ['SSLKEYLOGFILE']
-print(f"Home directory: {home_directory}")
+from datetime import datetime
 
+now = datetime.now().isoformat()
+aye = os.environ['A']
+bee = os.environ['B']
 
-with open("t.txt", "w") as file:
-    file.write("hmm")
-    
-    
-print(os.environ)
+line = f"{now}-{aye}-{bee}"
+print(line)
+
+with open("t.txt", "a") as file:
+    file.write(line)
+    file.write("\n")
