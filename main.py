@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from sys import argv
 from datetime import datetime, UTC
+import subprocess
 
 
 class Log(BaseModel):
@@ -11,42 +12,70 @@ class Log(BaseModel):
     message: str
 
 
-def main(domain_names: list[str]):
-    # p = Person(fn="v", ln="s")
+def get_public_ip():
+    
+    dig_output = subprocess.run(
+        ["dig", "+short", "myip.opendns.com", "@resolver1.opendns.com"],
+        capture_output=True,
+        text=True,
+    )
+    
+    if dig_output.returncode != 0:
+        raise RuntimeError(dig_output.stderr)
+    
+    if len(dig_output.stdout) == 0:
+        raise RuntimeError("could not get public ip; dig output was empty")
+    
+    return str.strip(dig_output.stdout)
 
-    # file_path = "person.json"
-    # with open(file_path, "w") as file:
-    #     file.write(p.json())
-    print("in main")
+
+def main(domains: list[str]):
+
+    # get public ip
+    log.ip_addr = get_public_ip()
+
+    for d in domains:
+        # get the currrent root host record
+
+        # if public ip mismatches root host record, upsert
+        pass
+
+        # domain_names
+        # print("in main")
 
 
 if __name__ == "__main__":
-    
+
+    # assumptions and incoming argurments
     LOG_FILE = "ddns-log.json"
-
-    # log the start time
-    # now_str = datetime.now(UTC).isoformat()
     start_timestamp = datetime.now(UTC)
+    domains = argv[1:]  # skip first argument (name of the script)
 
-    # get incoming args (list of domain names)
-    # skip the first argument (name of the script)
-    domain_names = argv[1:]
-
-    o = Log(
+    # initialize output log record
+    log = Log(
         timestamp=start_timestamp,
         success=True,
         ip_addr="",
-        domains=domain_names,
+        domains=domains,
         message="",
     )
 
     try:
-        main(domain_names)
-        raise Exception("whoops")
+        # confirm incoming data is valid
+        # if len(domains) == 0:
+        #     raise ValueError("specify at least one domain name")
+
+        # update dns records
+        main(domains)
+
     except Exception as e:
-        o.success = False
-        o.message = str(e)
+
+        # generate debug info
+        log.success = False
+        log.message = str(e)
+
     finally:
+
         # log latest run
         with open(LOG_FILE, "w") as file:
-            file.write(o.json())
+            file.write(log.json())
