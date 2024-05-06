@@ -1,5 +1,8 @@
-# Porkbun Dynamic DNS
+# Porkbun Dynamic DNS with Pydantic
 *Use pydantic to make handling the api calls and responses smooth as butter*
+
+## Credits
+Inspired by [abstractionmage/unofficial-porkbun-ddns-python](https://github.com/abstractionmage/unofficial-porkbun-ddns-python)
 
 # Dev Env (via Ansible)
 The Ansible playbook that sets up the container this script runs in uses apt to install `python3-ansible`.

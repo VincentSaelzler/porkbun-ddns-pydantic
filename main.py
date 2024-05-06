@@ -12,6 +12,9 @@ class Log(BaseModel):
     domains: list[str]
     message: str
 
+class PostData(BaseModel):
+    apikey: str
+    secretapikey: str
 
 def get_public_ip():
 
@@ -34,8 +37,17 @@ def main(domains: list[str]):
 
     # get public ip
     log.ip_addr = get_public_ip()
-
+    
+    # get secret keys
+    with open(KEY_FILE, "r") as file:
+        key_json = file.read()
+        
     for d in domains:
+        
+        r = requests.post(f"{BASE_ENDPOINT}/retrieve/{d}", key_json)
+        print()
+        
+        
         # get the currrent root host record
 
         # if public ip mismatches root host record, upsert
@@ -49,6 +61,8 @@ if __name__ == "__main__":
 
     # assumptions and incoming argurments
     LOG_FILE = "ddns-log.json"
+    KEY_FILE = "porkbun-keys.json"
+    BASE_ENDPOINT = "https://porkbun.com/api/json/v3/dns"
     start_timestamp = datetime.now(UTC)
     domains = argv[1:]  # skip first argument (name of the script)
     domains = ["quercusphellos.online"]
