@@ -20,9 +20,7 @@ code --install-extension ms-python.black-formatter
 
 
 ## Virtual Environments
-The `.devenv` environment based on `requirements.txt` is automatically created by Ansible.
-
-To update it...
+To update/change the virtual environment
 ```
 rm -rf .devenv
 rm requirements.txt
