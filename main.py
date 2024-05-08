@@ -1,6 +1,3 @@
-from pydantic import __version__
-import os
+import porkbun
 
-print(os.environ['APIKEY'])
-print(os.environ['SECRETAPIKEY'])
-print(f"pydantic version: {__version__}")
+porkbun.get_public_ip()
