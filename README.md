@@ -10,6 +10,7 @@ Manually install extensions within the ssh remote session of vscode.
 ```sh
 code --install-extension ms-python.python
 code --install-extension ms-python.black-formatter
+code --install-extension ms-python.isort
 ```
 
 ## Virtual Environments

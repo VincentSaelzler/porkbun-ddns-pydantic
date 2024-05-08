@@ -16,31 +16,13 @@ class PostData(BaseModel):
     apikey: str
     secretapikey: str
 
-def get_public_ip():
 
-    dig_output = subprocess.run(
-        ["dig", "+short", "myip.opendns.com", "@resolver1.opendns.com"],
-        capture_output=True,
-        text=True,
-    )
-
-    if dig_output.returncode != 0:
-        raise RuntimeError(dig_output.stderr)
-
-    if len(dig_output.stdout) == 0:
-        raise RuntimeError("could not get public ip; dig output was empty")
-
-    return str.strip(dig_output.stdout)
 
 
 def main(domains: list[str]):
 
-    # get public ip
-    log.ip_addr = get_public_ip()
-    
-    # get secret keys
-    with open(KEY_FILE, "r") as file:
-        key_json = file.read()
+
+
         
     for d in domains:
         
