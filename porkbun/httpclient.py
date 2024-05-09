@@ -9,9 +9,6 @@ _DNS_ENDPOINT = "https://porkbun.com/api/json/v3/dns"
 _KEYS = {"apikey": os.environ["APIKEY"], "secretapikey": os.environ["SECRETAPIKEY"]}
 
 
-DOMAIN = "quercusphellos.online"
-
-
 class Response(BaseModel):
     # raises exception for any other status
     status: Literal["SUCCESS"]
@@ -22,8 +19,18 @@ class PingResponse(Response):
     yourIp: IPv4Address
 
 
+class Record(BaseModel):
+    id: str
+    name: str
+    type: Literal["NS", "A"]
+    content: str
+    ttl: str
+    prio: str | None
+    notes: str | None
+
+
 class DomainResponse(Response):
-    records: Any
+    records: list[Record]
 
 
 def _post(url: str, json: dict[str, Any]):
@@ -43,3 +50,15 @@ def get_public_ip():
     # return public ipv4 address as string
     ping_response = PingResponse.model_validate_json(response_content)
     return str(ping_response.yourIp)
+
+
+def get_domain(domain: str):
+
+    endpoint = _DNS_ENDPOINT + "/retrieve/" + domain
+
+    response_content = _post(endpoint, _KEYS)
+
+    domain_response = DomainResponse.model_validate_json(response_content)
+    return domain_response
+
+    print("waittt")
