@@ -1,0 +1,60 @@
+{
+    "status": "SUCCESS",
+    "cloudflare": "enabled",
+    "records": [
+        {
+            "id": "399347448",
+            "name": "quercusphellos.online",
+            "type": "A",
+            "content": "137.220.108.97",
+            "ttl": "600",
+            "prio": "0",
+            "notes": null
+        },
+        {
+            "id": "399348596",
+            "name": "www.quercusphellos.online",
+            "type": "CNAME",
+            "content": "quercusphellos.online",
+            "ttl": "600",
+            "prio": "0",
+            "notes": ""
+        },
+        {
+            "id": "398579354",
+            "name": "quercusphellos.online",
+            "type": "NS",
+            "content": "maceio.porkbun.com",
+            "ttl": "86400",
+            "prio": null,
+            "notes": null
+        },
+        {
+            "id": "398579355",
+            "name": "quercusphellos.online",
+            "type": "NS",
+            "content": "salvador.porkbun.com",
+            "ttl": "86400",
+            "prio": null,
+            "notes": null
+        },
+        {
+            "id": "398579356",
+            "name": "quercusphellos.online",
+            "type": "NS",
+            "content": "fortaleza.porkbun.com",
+            "ttl": "86400",
+            "prio": null,
+            "notes": null
+        },
+        {
+            "id": "398579357",
+            "name": "quercusphellos.online",
+            "type": "NS",
+            "content": "curitiba.porkbun.com",
+            "ttl": "86400",
+            "prio": null,
+            "notes": null
+        }
+    ]
+}
