@@ -61,4 +61,15 @@ def get_domain(domain: str):
     domain_response = DomainResponse.model_validate_json(response_content)
     return domain_response
 
+
+def get_records(domain: str, type: str, subdomain: str | None = None):
+    endpoint = f"{_DNS_ENDPOINT}/retrieveByNameType/{domain}/{type}"
+    if subdomain is not None:
+        endpoint = f"{endpoint}/{subdomain}"
+        
+    response_content = _post(endpoint, _KEYS)
+    
+    domain_response = DomainResponse.model_validate_json(response_content)
+    
+
     print("waittt")
