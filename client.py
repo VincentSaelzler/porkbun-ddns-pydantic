@@ -1,14 +1,7 @@
-# from ipaddress import IPv4Address
-# from typing import Any, Literal
-# import config
-
-# from pydantic import BaseModel
-# import requests
+from typing import Literal, Protocol
 
 import porkbun.httpapi
 import porkbun.mockapi
-
-from typing import Protocol
 
 
 class Backend(Protocol):
@@ -16,12 +9,18 @@ class Backend(Protocol):
 
 
 class Client:
-    @staticmethod
-    def choose_backend(use_mock_backend: bool) -> Backend:
-        return porkbun.mockapi if use_mock_backend else porkbun.httpapi
+    BackendType = Literal["mock", "http"]
 
-    def __init__(self, use_mock_backend: bool = False) -> None:
-        self._backend = Client.choose_backend(use_mock_backend)
+    _backends: dict[BackendType, Backend] = {
+        "mock": porkbun.mockapi,
+        "http": porkbun.httpapi,
+    }
+
+    def __init__(self, backend_type: BackendType = "http") -> None:
+        self._backend = Client._backends[backend_type]
+
+    def set_backend(self, backend_type: BackendType):
+        self._backend = Client._backends[backend_type]
 
 
 # _DNS_ENDPOINT = "https://porkbun.com/api/json/v3/dns"
