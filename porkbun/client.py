@@ -24,6 +24,8 @@ def _get(backend: Backend, endpoint: GetEndpoint, domain: str | None = None):
         case "retrieve", None:
             raise ValueError("domain is required for retrieve endpoint")
 
+get_http = partial(_get, _post)
+# ip = get_http("ping", None)
 
 # validate json response
 def _validate(raw_json: bytes, get_endpoint: GetEndpoint):
@@ -38,24 +40,12 @@ def _validate(raw_json: bytes, get_endpoint: GetEndpoint):
             # return domain_response
             raise NotImplementedError()
         # case "update":
-            # request_payload = {
-            #     "content": "137.220.108.97",
-            #     "name": "quercusphellos.online",
-            #     "answer": "137.220.108.97",
-            # }
-            # request_payload.update(API_KEYS)
+        # request_payload = {
+        #     "content": "137.220.108.97",
+        #     "name": "quercusphellos.online",
+        #     "answer": "137.220.108.97",
+        # }
+        # request_payload.update(API_KEYS)
 
 
-# abstractions
-# get_http = partial(_get, backend=_post)
-# ip = get_http("ping", None)
 
-
-# run stuff ---------------------------------------------------------
-
-# ip = _get(_post, "ping", "quercusphellos.online")
-ip = _get(_post, "ping", None)
-# records = get("retrieve", "quercusphellos.online")
-# records = get("retrieve", None)
-
-print("wait")
