@@ -17,7 +17,7 @@ class PorkbunClient:
     def get_public_ip(self) -> str: ...
 
 
-# _DNS_ENDPOINT = "https://porkbun.com/api/json/v3/dns"
+
 
 
 # class Response(BaseModel):

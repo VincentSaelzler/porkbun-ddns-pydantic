@@ -2,7 +2,7 @@ from typing import Literal, Protocol
 
 
 
-RequestType = Literal["ping"]
+
 BackendType = Literal["mock", "http"]
 
 class Backend(Protocol):
