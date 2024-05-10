@@ -1,4 +1,4 @@
-from client import DomainResponse, Record
+from porkbun.client import DomainResponse, Record
 
 
 def get_public_ip():

@@ -1,26 +1,20 @@
 from typing import Literal, Protocol
 
-import porkbun.httpapi
+import porkbun.http
 import porkbun.mockapi
 
 
-class Backend(Protocol):
-    def get_public_ip(self) -> str: ...
 
+class PorkbunClient:
 
-class Client:
-    BackendType = Literal["mock", "http"]
-
-    _backends: dict[BackendType, Backend] = {
-        "mock": porkbun.mockapi,
-        "http": porkbun.httpapi,
-    }
 
     def __init__(self, backend_type: BackendType = "http") -> None:
-        self._backend = Client._backends[backend_type]
+        self._backend = PorkbunClient._backends[backend_type]
 
     def set_backend(self, backend_type: BackendType):
-        self._backend = Client._backends[backend_type]
+        self._backend = PorkbunClient._backends[backend_type]
+
+    def get_public_ip(self) -> str: ...
 
 
 # _DNS_ENDPOINT = "https://porkbun.com/api/json/v3/dns"

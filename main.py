@@ -1,8 +1,7 @@
-from enum import Enum
-from client import Client
+from porkbun.client import PorkbunClient
 
 
-client = Client()
+dns_client = PorkbunClient()
 
 
 
