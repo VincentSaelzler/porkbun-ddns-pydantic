@@ -10,6 +10,7 @@ Use linux environment variables.
 echo export APIKEY=pk1_redacted >> ~/.bashrc
 echo export SECRETAPIKEY=sk1_redacted >> ~/.bashrc
 ```
+**CRITICAL:** Then run the visual studio code command "Developer: Restart Pty Host"
 
 ## Dev Environment
 Use VS Code devcontainers extension. Environment is defined in .devcontainer folder.
