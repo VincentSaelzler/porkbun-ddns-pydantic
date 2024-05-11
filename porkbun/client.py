@@ -1,5 +1,5 @@
 from ipaddress import IPv4Address
-from typing import Literal
+from typing import Any, Literal
 from pydantic import BaseModel
 import requests
 from config import API_KEYS, IPV4_ENDPOINT, DNS_ENDPOINT
@@ -30,7 +30,7 @@ class DomainResponse(Response):
 
 
 # send/receive http data
-def http_post(url: str, json_: dict[str, str]):
+def http_post(url: str, json_: dict[str, Any]):
     r = requests.post(url, json=json_)
     r.raise_for_status()
     return r.content
@@ -47,23 +47,35 @@ def generate_get_request(endpoint: GetEndpoint, domain: str | None = None):
             raise ValueError("domain is required for retrieve endpoint")
 
 
-# # parse logical request to http request
-# def generate_set_request(
-#     endpoint: SetEndpoint, domain: str, type_: str, subdomain: str | None = None
-# ):
-#     match endpoint, domain, type_, subdomain:
-#         case "editByNameType", str(), str():
-#             raise ValueError("domain is required for retrieve endpoint")
+# parse logical request to http request
+def generate_set_request(endpoint: SetEndpoint, domain: str, record: Record):
+
+    json_ = record.model_dump()
+    json_.update(API_KEYS)
+
+    subdomain_with_final_dot = record.name.replace(domain, "")
+    subdomain = subdomain_with_final_dot[:-1]
+
+    match endpoint, subdomain:
+        case "editByNameType", "":
+            return ("/".join([DNS_ENDPOINT, endpoint, domain, record.type]), json_)
+        case "editByNameType", str():
+            return (
+                "/".join([DNS_ENDPOINT, endpoint, domain, record.type, subdomain]),
+                json_,
+            )
 
 
 # validate json response
 def ping(raw_json: bytes):
     return PingResponse.model_validate_json(raw_json).yourIp
 
+
 def retrieve(raw_json: bytes):
     records = DomainResponse.model_validate_json(raw_json).records
     # leave NS records unchanged; do not process
     return [r for r in records if r.type != "NS"]
+
 
 # # case "update":
 # # request_payload = {
