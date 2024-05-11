@@ -1,13 +1,20 @@
 import client
 
-# set as tests once a mock api is available
-# ip = _get(_post, "ping", "quercusphellos.online")
-response_bytes = client.get_http("ping", None)
-public_ip = client.validate("ping", response_bytes)
+# url, json_ = client.generate_get_request("ping")
+# response = client.http_post(url, json_)
+# public_ip = client.ping(response)
 
+url, json_ = client.generate_get_request("retrieve", "quercusphellos.online")
+response = client.http_post(url, json_)
+records = client.retrieve(response)
+              
+                            
 # response_bytes = client.get_http("ping", None)
-# records = get("retrieve", "quercusphellos.online")
-# records = get("retrieve", None)
+# public_ip = client.get_ip(response_bytes)
+
+# response_bytes = client.get_http("retrieve", "quercusphellos.online")
 
 
-print("yay!")
+
+
+print("more functional")
