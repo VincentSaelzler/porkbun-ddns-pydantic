@@ -4,22 +4,24 @@
 ## Credits
 Inspired by [abstractionmage/unofficial-porkbun-ddns-python](https://github.com/abstractionmage/unofficial-porkbun-ddns-python)
 
-
-## Dev Env (Manual Steps)
-Manually install extensions within the ssh remote session of vscode.
-```sh
-code --install-extension ms-python.python
-code --install-extension ms-python.black-formatter
-code --install-extension ms-python.isort
+## Secrets
+Use linux environment variables.
 ```
+echo export APIKEY=pk1_redacted >> ~/.bashrc
+echo export SECRETAPIKEY=sk1_redacted >> ~/.bashrc
+```
+
+## Dev Environment
+Use VS Code devcontainers extension. Environment is defined in .devcontainer folder.
+
 
 ## Virtual Environments
-To update/change the virtual environment
+To create/update/change the virtual environment
 ```
-rm -rf .devenv
+rm -rf .venv
 rm requirements.txt
 
-python3 -m venv .devenv
+python3 -m venv .venv
 source .devenv/bin/activate
 
 pip install --upgrade pip
