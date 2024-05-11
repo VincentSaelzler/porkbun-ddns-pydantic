@@ -3,6 +3,7 @@ from typing import Any, Literal
 from pydantic import BaseModel
 import requests
 from config import API_KEYS, IPV4_ENDPOINT, DNS_ENDPOINT
+from json import dumps
 
 GetEndpoint = Literal["ping", "retrieve"]
 SetEndpoint = Literal["editByNameType"]
@@ -30,8 +31,13 @@ class DomainResponse(Response):
 
 
 # send/receive http data
-def http_post(url: str, json_: dict[str, Any]):
-    r = requests.post(url, json=json_)
+def http_post(url: str, payload: dict[str, Any]):
+    # debugging
+    print(url)
+    print(dumps(payload))
+    
+    # send via http
+    r = requests.post(url, json=payload)
     r.raise_for_status()
     return r.content
 
