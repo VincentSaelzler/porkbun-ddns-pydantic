@@ -23,7 +23,7 @@ rm -rf .venv
 rm requirements.txt
 
 python3 -m venv .venv
-source .devenv/bin/activate
+source .venv/bin/activate
 
 pip install --upgrade pip
 pip install --upgrade pip-tools
