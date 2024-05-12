@@ -32,14 +32,19 @@ class DomainResponse(Response):
 
 # send/receive http data
 def http_post(url: str, payload: dict[str, Any]):
-    # debugging
-    print(url)
-    print(dumps(payload))
-    
+
     # send via http
-    r = requests.post(url, json=payload)
-    r.raise_for_status()
-    return r.content
+    response = requests.post(url, json=payload)
+
+    try:
+        # return content if request was successful
+        response.raise_for_status()
+        return response.content
+    finally:
+        # print debugging info
+        print(url)
+        print(dumps(payload))
+        print(response.text)
 
 
 # parse logical request to http request
