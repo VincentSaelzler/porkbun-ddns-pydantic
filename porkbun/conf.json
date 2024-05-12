@@ -5,9 +5,14 @@
     "dns_endpoint": "https://porkbun.com/api/json/v3/dns",
     "dns_records": [
         {
-            "name": "",
+            "name": "quercusphellos.online",
             "type": "A",
-            "content": ""
+            "content": "152.37.72.135"
+        },
+        {
+            "name": "www.quercusphellos.online",
+            "type": "CNAMEE",
+            "content": "quercusphellos.online"
         }
     ]
 }
