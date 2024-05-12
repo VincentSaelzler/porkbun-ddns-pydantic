@@ -1,8 +1,6 @@
 import client
 
 
-client.json_post("x", {"x": None})
-
 url, json_ = client.generate_get_request("ping")
 response = client.http_post(url, json_)
 public_ip = client.ping(response)

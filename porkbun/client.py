@@ -1,13 +1,11 @@
 from ipaddress import IPv4Address
 from typing import Any, Literal
-from pydantic import BaseModel, TypeAdapter
+from pydantic import BaseModel
 import requests
 from config import API_KEYS, IPV4_ENDPOINT, DNS_ENDPOINT
-from json import dumps
 
 GetEndpoint = Literal["ping", "retrieve"]
 SetEndpoint = Literal["editByNameType"]
-# Backend = Callable[[str, dict[str, str]], bytes]
 
 
 class Response(BaseModel):
@@ -20,29 +18,15 @@ class PingResponse(Response):
     yourIp: IPv4Address
 
 
-class Record(BaseModel):
+class DnsRecord(BaseModel):
     name: str
     type: Literal["NS", "A", "CNAME"]
     content: str
 
 
 class DomainResponse(Response):
-    records: list[Record]
+    records: list[DnsRecord]
 
-
-class CallAndResponse(BaseModel):
-    url: str
-    payload: dict[str, Any]
-    response: bytes
-
-
-def json_post(url: str, payload: dict[str, Any]):
-    with open("porkbun/call_log.json", "r") as f:
-        file_content = f.read()
-        call_log_adapter = TypeAdapter(list[CallAndResponse])
-        call_log = call_log_adapter.validate_json(file_content)
-        print(call_log)
-    
 
 # send/receive http data
 def http_post(url: str, payload: dict[str, Any]):
@@ -55,8 +39,12 @@ def http_post(url: str, payload: dict[str, Any]):
         r.raise_for_status()
         return r.content
     finally:
-        call_and_response = CallAndResponse(url=url, payload=payload, response=r.content)
-        print(CallAndResponse.model_dump_json(call_and_response))
+        # debugging output
+        payload["secretapikey"] = "[redacted]"
+        payload["apikey"] = "[redacted]"
+        print(url)
+        print(payload)
+        print(r.text)
 
 
 # parse logical request to http request
@@ -71,7 +59,7 @@ def generate_get_request(endpoint: GetEndpoint, domain: str | None = None):
 
 
 # parse logical request to http request
-def generate_set_request(endpoint: SetEndpoint, domain: str, record: Record):
+def generate_set_request(endpoint: SetEndpoint, domain: str, record: DnsRecord):
 
     json_ = record.model_dump()
     json_.update(API_KEYS)
