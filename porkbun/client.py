@@ -1,6 +1,6 @@
 from ipaddress import IPv4Address
 from typing import Any, Literal
-from pydantic import BaseModel
+from pydantic import BaseModel, TypeAdapter
 import requests
 from config import API_KEYS, IPV4_ENDPOINT, DNS_ENDPOINT
 from json import dumps
@@ -30,21 +30,33 @@ class DomainResponse(Response):
     records: list[Record]
 
 
+class CallAndResponse(BaseModel):
+    url: str
+    payload: dict[str, Any]
+    response: bytes
+
+
+def json_post(url: str, payload: dict[str, Any]):
+    with open("porkbun/call_log.json", "r") as f:
+        file_content = f.read()
+        call_log_adapter = TypeAdapter(list[CallAndResponse])
+        call_log = call_log_adapter.validate_json(file_content)
+        print(call_log)
+    
+
 # send/receive http data
 def http_post(url: str, payload: dict[str, Any]):
 
     # send via http
-    response = requests.post(url, json=payload)
+    r = requests.post(url, json=payload)
 
     try:
         # return content if request was successful
-        response.raise_for_status()
-        return response.content
+        r.raise_for_status()
+        return r.content
     finally:
-        # print debugging info
-        print(url)
-        print(dumps(payload))
-        print(response.text)
+        call_and_response = CallAndResponse(url=url, payload=payload, response=r.content)
+        print(CallAndResponse.model_dump_json(call_and_response))
 
 
 # parse logical request to http request

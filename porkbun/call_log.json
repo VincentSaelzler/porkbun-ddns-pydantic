@@ -1,0 +1,4 @@
+[
+{"url":"https://api-ipv4.porkbun.com/api/json/v3/ping","payload":{"apikey":"x","secretapikey":"x"},"response":"{\"status\":\"SUCCESS\",\"yourIp\":\"152.37.72.135\"}"},
+{"url":"https://api-ipv4.porkbun.com/api/json/v3/ping","payload":{"apikey":"x","secretapikey":"x"},"response":"{\"status\":\"SUCCESS\",\"yourIp\":\"152.37.72.135\"}"}
+]
