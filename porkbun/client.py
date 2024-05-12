@@ -1,8 +1,8 @@
 from ipaddress import IPv4Address
-from typing import Any, Literal
+from typing import Literal
 from pydantic import BaseModel
 import requests
-from porkbun.conf import API_KEYS, IPV4_ENDPOINT, DNS_ENDPOINT, DNSRecord
+from conf import CONF, DNSRecord
 
 GetEndpoint = Literal["ping", "retrieve"]
 SetEndpoint = Literal["editByNameType"]
@@ -26,70 +26,93 @@ class DomainResponse(Response):
     records: list[PorkbunDNSRecord]
 
 
+class Body(BaseModel):
+    apikey: str
+    secretapikey: str
+
+
+class Request(BaseModel):
+    url: str
+    body: Body
+
+
 # send/receive http data
-def http_post(url: str, payload: dict[str, Any]):
+def http_post(request: Request):
+
+    testjson = {
+        "apikey": "pk1_895067c0e864a1820263c61fc5b05290d175f4ce4d0641c09c86a8e95e40cf5b",
+        "secretapikey": "sk1_80b3bd38147b17b7cef1fb09e548ba39895d595d106217c73ea960c2145d7978",
+    }
 
     # send via http
-    r = requests.post(url, json=payload)
+    response = requests.post(request.url, json=request.body.model_dump())
+    # response = requests.post(request.url, json=testjson)
 
     try:
         # return content if request was successful
-        r.raise_for_status()
-        return r.content
+        response.raise_for_status()
+        return response.content
     finally:
         # strip secrets
-        payload_without_secrets = payload.copy()
-        payload_without_secrets["secretapikey"] = "[redacted]"
-        payload_without_secrets["apikey"] = "[redacted]"
+        # payload_without_secrets = payload.copy()
+        # payload_without_secrets["secretapikey"] = "[redacted]"
+        # payload_without_secrets["apikey"] = "[redacted]"
 
         # debugging output
-        print(url)
-        print(payload_without_secrets)
-        print(r.text)
+        # print(url)
+        # print(payload_without_secrets)
+        # print(response.text)
+        pass
 
 
 # parse logical request to http request
-def generate_get_request(endpoint: GetEndpoint, domain: str | None = None):
-    match endpoint, domain:
-        case "ping", _:
-            return ("/".join([IPV4_ENDPOINT, endpoint]), API_KEYS)
-        case "retrieve", str():
-            return ("/".join([DNS_ENDPOINT, endpoint, domain]), API_KEYS)
-        case "retrieve", None:
-            raise ValueError("domain is required for retrieve endpoint")
-
-
-# parse logical request to http request
-def generate_set_request(endpoint: SetEndpoint, domain: str, record: DNSRecord):
-
-    json_ = record.model_dump()
-    json_.update(API_KEYS)
-
-    subdomain_with_final_dot = record.name.replace(domain, "")
-    subdomain = subdomain_with_final_dot[:-1]
-
-    match endpoint, subdomain:
-        case "editByNameType", "":
-            return ("/".join([DNS_ENDPOINT, endpoint, domain, record.type]), json_)
-        case "editByNameType", str():
-            return (
-                "/".join([DNS_ENDPOINT, endpoint, domain, record.type, subdomain]),
-                json_,
+def generate_http_request(endpoint: GetEndpoint):
+    match endpoint:
+        case "ping":
+            return Request(
+                url="/".join([str(CONF.ipv4_endpoint), endpoint]),
+                body=Body(apikey=CONF.apikey, secretapikey=CONF.secretapikey),
             )
+        case "retrieve":
+            raise ValueError
 
 
-# validate json response
-def ping(raw_json: bytes):
-    return PingResponse.model_validate_json(raw_json).yourIp
+# def parse_json_response(endpoint: GetEndpoint):
+#     match endpoint:
+#         case "ping":
+#             return "x"
+#         case
+# # parse logical request to http request
+# def generate_set_request(endpoint: SetEndpoint, domain: str, record: DNSRecord):
+
+#     json_ = record.model_dump()
+#     json_.update(API_KEYS)
+
+#     subdomain_with_final_dot = record.name.replace(domain, "")
+#     subdomain = subdomain_with_final_dot[:-1]
+
+#     match endpoint, subdomain:
+#         case "editByNameType", "":
+#             return ("/".join([DNS_ENDPOINT, endpoint, domain, record.type]), json_)
+#         case "editByNameType", str():
+#             return (
+#                 "/".join([DNS_ENDPOINT, endpoint, domain, record.type, subdomain]),
+#                 json_,
+#             )
 
 
-def retrieve(raw_json: bytes):
-    records = DomainResponse.model_validate_json(raw_json).records
-    # leave NS records unchanged; do not process
-    return [r for r in records if r.type != "NS"]
+# # validate json response
+# def ping(raw_json: bytes):
+#     return PingResponse.model_validate_json(raw_json).yourIp
 
 
-# # case "update":
+# def retrieve(raw_json: bytes):
+#     records = DomainResponse.model_validate_json(raw_json).records
+#     # leave NS records unchanged; do not process
+#     return [r for r in records if r.type != "NS"]
+
+
+# # # case "update":
 # # request_payload = {
 # #     "content": "137.220.108.97",
 # #     "name": "quercusphellos.online",

@@ -11,7 +11,7 @@
         },
         {
             "name": "www.quercusphellos.online",
-            "type": "CNAMEE",
+            "type": "CNAME",
             "content": "quercusphellos.online"
         }
     ]

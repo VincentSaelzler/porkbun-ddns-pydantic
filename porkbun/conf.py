@@ -50,6 +50,3 @@ def GetConfiguration():
 
 
 CONF = GetConfiguration()
-
-
-print("k")
