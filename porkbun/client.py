@@ -2,7 +2,7 @@ from ipaddress import IPv4Address
 from typing import Any, Literal
 from pydantic import BaseModel
 import requests
-from config import API_KEYS, IPV4_ENDPOINT, DNS_ENDPOINT
+from porkbun.conf import API_KEYS, IPV4_ENDPOINT, DNS_ENDPOINT, DNSRecord
 
 GetEndpoint = Literal["ping", "retrieve"]
 SetEndpoint = Literal["editByNameType"]
@@ -18,14 +18,12 @@ class PingResponse(Response):
     yourIp: IPv4Address
 
 
-class DnsRecord(BaseModel):
-    name: str
-    type: Literal["NS", "A", "CNAME"]
-    content: str
+class PorkbunDNSRecord(DNSRecord):
+    id: str
 
 
 class DomainResponse(Response):
-    records: list[DnsRecord]
+    records: list[PorkbunDNSRecord]
 
 
 # send/receive http data
@@ -39,11 +37,14 @@ def http_post(url: str, payload: dict[str, Any]):
         r.raise_for_status()
         return r.content
     finally:
+        # strip secrets
+        payload_without_secrets = payload.copy()
+        payload_without_secrets["secretapikey"] = "[redacted]"
+        payload_without_secrets["apikey"] = "[redacted]"
+
         # debugging output
-        payload["secretapikey"] = "[redacted]"
-        payload["apikey"] = "[redacted]"
         print(url)
-        print(payload)
+        print(payload_without_secrets)
         print(r.text)
 
 
@@ -59,7 +60,7 @@ def generate_get_request(endpoint: GetEndpoint, domain: str | None = None):
 
 
 # parse logical request to http request
-def generate_set_request(endpoint: SetEndpoint, domain: str, record: DnsRecord):
+def generate_set_request(endpoint: SetEndpoint, domain: str, record: DNSRecord):
 
     json_ = record.model_dump()
     json_.update(API_KEYS)

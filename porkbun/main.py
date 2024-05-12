@@ -1,13 +1,19 @@
 import client
+from porkbun.conf import DNSRecord
+
+desired_records = [
+    DNSRecord("quercusphellos.online", "A", "152.37.72.135"),
+    DNSRecord("www.quercusphellos.online", "CNAME", "quercusphellos.online"),
+]
 
 
 url, json_ = client.generate_get_request("ping")
 response = client.http_post(url, json_)
 public_ip = client.ping(response)
 
-# url, json_ = client.generate_get_request("retrieve", "quercusphellos.online")
-# response = client.http_post(url, json_)
-# records = client.retrieve(response)
+url, json_ = client.generate_get_request("retrieve", "quercusphellos.online")
+response = client.http_post(url, json_)
+records = client.retrieve(response)
 
 # url, json_ = client.generate_set_request(
 #     "editByNameType", "quercusphellos.online", records[0]
