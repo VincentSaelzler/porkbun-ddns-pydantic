@@ -45,20 +45,29 @@ def http_post(request: Request):
         response.raise_for_status()
         return response.content
     finally:
-        print(request.model_dump_json(exclude={"body": {"apikey", "secretapikey"}}))
+        print(
+            request.model_dump_json(
+                indent=2, exclude={"body": {"apikey", "secretapikey"}}
+            )
+        )
         print(response.text)
 
 
 # parse logical request to http request
-def generate_http_request(endpoint: GetEndpoint):
-    match endpoint:
-        case "ping":
+def generate_http_request(endpoint: GetEndpoint, domain: str | None = None):
+    match endpoint, domain:
+        case "ping", _:
             return Request(
                 url="/".join([str(CONF.ipv4_endpoint), endpoint]),
                 body=Body(apikey=CONF.apikey, secretapikey=CONF.secretapikey),
             )
-        case "retrieve":
-            raise ValueError
+        case "retrieve", str():
+            return Request(
+                url="/".join([str(CONF.dns_endpoint), endpoint, domain]),
+                body=Body(apikey=CONF.apikey, secretapikey=CONF.secretapikey),
+            )
+        case "retrieve", None:
+            raise ValueError("domain is required for retrieve endpoint")
 
 
 def get_public_ip():
@@ -66,8 +75,14 @@ def get_public_ip():
     response = http_post(request)
     return PingResponse.model_validate_json(response).yourIp
 
+
 def get_domain_records(domain: str):
-    pass
+    request = generate_http_request("retrieve", domain)
+    response = http_post(request)
+    records = DomainResponse.model_validate_json(response).records
+    # leave NS records as-is; do not edit or delete
+    editable_records = [r for r in records if r.type != "NS"]
+    return editable_records
 
 
 # # parse logical request to http request

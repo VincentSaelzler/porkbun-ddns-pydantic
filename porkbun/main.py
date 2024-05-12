@@ -1,10 +1,18 @@
 import client
+from conf import CONF
 
 
 
 
+# public_ip = client.get_public_ip()
+public_ip = "152.37.72.135"
 
-public_ip = client.get_public_ip()
+for domain, desired_records in CONF.dns_records.items():
+    existing_records = client.get_domain_records(domain)
+    print("let's hope")
+    
+
+
 
 # url, json_ = client.generate_http_request("retrieve", "quercusphellos.online")
 # response = client.http_post(url, json_)
