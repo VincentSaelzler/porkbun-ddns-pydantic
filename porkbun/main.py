@@ -3,9 +3,8 @@ import client
 
 
 
-request = client.generate_http_request("ping")
-response = client.http_post(request)
-# public_ip = client.ping(response)
+
+public_ip = client.get_public_ip()
 
 # url, json_ = client.generate_http_request("retrieve", "quercusphellos.online")
 # response = client.http_post(url, json_)

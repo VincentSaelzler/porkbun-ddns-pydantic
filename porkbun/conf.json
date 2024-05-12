@@ -3,16 +3,18 @@
     "secretapikey": "",
     "ipv4_endpoint": "https://api-ipv4.porkbun.com/api/json/v3",
     "dns_endpoint": "https://porkbun.com/api/json/v3/dns",
-    "dns_records": [
-        {
-            "name": "quercusphellos.online",
-            "type": "A",
-            "content": "152.37.72.135"
-        },
-        {
-            "name": "www.quercusphellos.online",
-            "type": "CNAME",
-            "content": "quercusphellos.online"
-        }
-    ]
+    "dns_records": {
+        "quercusphellos.online": [
+            {
+                "name": "quercusphellos.online",
+                "type": "A",
+                "content": "152.37.72.135"
+            },
+            {
+                "name": "www.quercusphellos.online",
+                "type": "CNAME",
+                "content": "quercusphellos.online"
+            }
+        ]
+    }
 }

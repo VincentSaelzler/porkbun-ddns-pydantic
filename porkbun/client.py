@@ -38,31 +38,15 @@ class Request(BaseModel):
 
 # send/receive http data
 def http_post(request: Request):
-
-    testjson = {
-        "apikey": "pk1_895067c0e864a1820263c61fc5b05290d175f4ce4d0641c09c86a8e95e40cf5b",
-        "secretapikey": "sk1_80b3bd38147b17b7cef1fb09e548ba39895d595d106217c73ea960c2145d7978",
-    }
-
     # send via http
     response = requests.post(request.url, json=request.body.model_dump())
-    # response = requests.post(request.url, json=testjson)
-
     try:
         # return content if request was successful
         response.raise_for_status()
         return response.content
     finally:
-        # strip secrets
-        # payload_without_secrets = payload.copy()
-        # payload_without_secrets["secretapikey"] = "[redacted]"
-        # payload_without_secrets["apikey"] = "[redacted]"
-
-        # debugging output
-        # print(url)
-        # print(payload_without_secrets)
-        # print(response.text)
-        pass
+        print(request.model_dump_json(exclude={"body": {"apikey", "secretapikey"}}))
+        print(response.text)
 
 
 # parse logical request to http request
@@ -77,11 +61,15 @@ def generate_http_request(endpoint: GetEndpoint):
             raise ValueError
 
 
-# def parse_json_response(endpoint: GetEndpoint):
-#     match endpoint:
-#         case "ping":
-#             return "x"
-#         case
+def get_public_ip():
+    request = generate_http_request("ping")
+    response = http_post(request)
+    return PingResponse.model_validate_json(response).yourIp
+
+def get_domain_records(domain: str):
+    pass
+
+
 # # parse logical request to http request
 # def generate_set_request(endpoint: SetEndpoint, domain: str, record: DNSRecord):
 

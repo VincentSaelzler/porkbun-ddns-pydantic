@@ -40,7 +40,7 @@ class Configuration(BaseModel):
     secretapikey: EnvStr
     ipv4_endpoint: HttpUrl
     dns_endpoint: HttpUrl
-    dns_records: list[DNSRecord]
+    dns_records: dict[str, list[DNSRecord]]
 
 
 def GetConfiguration():
