@@ -19,9 +19,9 @@
                 "content": "4.20.4.20"
             },
             {
-                "name": "external.quercusphellos.online",
+                "name": "oldsub.quercusphellos.online",
                 "type": "CNAME",
-                "content": "porkbun.com"
+                "content": "newsub.quercusphellos.online"
             }
         ]
     }

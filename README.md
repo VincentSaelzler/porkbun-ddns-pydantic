@@ -31,3 +31,5 @@ pip install --upgrade pip-tools
 pip-compile
 pip-sync
 ```
+## Limitations
+The desired URL must be either the root domain, or a subdomain.

@@ -2,7 +2,8 @@ from ipaddress import IPv4Address
 from typing import Literal
 from pydantic import BaseModel
 import requests
-from conf import CONF, ConfRecord, EditableRecordType
+from conf import CONF, EditableRecordType, FixedRecordType
+
 
 GetEndpoint = Literal["ping", "retrieve"]
 SetEndpoint = Literal["editByNameType"]
@@ -18,13 +19,10 @@ class PingResponse(Response):
     yourIp: IPv4Address
 
 
-class PorkbunRecord(ConfRecord):
+class PorkbunRecord(BaseModel):
     id: str
-
-
-class DNSRecord(BaseModel):
     name: str
-    type: EditableRecordType
+    type: EditableRecordType | FixedRecordType
     content: str
 
 
@@ -82,7 +80,7 @@ def get_public_ip():
     return PingResponse.model_validate_json(response).yourIp
 
 
-def get_domain_records(domain: str):
+def get_records(domain: str):
     request = generate_http_request("retrieve", domain)
     response = http_post(request)
     records = DomainResponse.model_validate_json(response).records
