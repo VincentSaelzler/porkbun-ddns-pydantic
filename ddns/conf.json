@@ -7,13 +7,11 @@
         "quercusphellos.online": [
             {
                 "name": "quercusphellos.online",
-                "type": "A",
-                "content": "152.37.72.135"
+                "type": "A"
             },
             {
                 "name": "www.quercusphellos.online",
-                "type": "CNAME",
-                "content": "quercusphellos.online"
+                "type": "CNAME"
             }
         ]
     }

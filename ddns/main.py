@@ -1,17 +1,31 @@
+from ipaddress import IPv4Address
 import client
-from conf import CONF
+from conf import CONF, ConfRecord
 
 
+def conf_to_dns(conf_record: ConfRecord, domain: str, public_ip: IPv4Address):
+    match conf_record.type:
+        case "A":
+            default_content = str(public_ip)
+        case "CNAME":
+            default_content = domain
+
+    return client.DNSRecord(
+        name=conf_record.name,
+        type=conf_record.type,
+        content=conf_record.content or default_content,
+    )
 
 
 # public_ip = client.get_public_ip()
-public_ip = "152.37.72.135"
+public_ip = IPv4Address("152.37.72.135")
 
-for domain, desired_records in CONF.dns_records.items():
-    existing_records = client.get_domain_records(domain)
-    print("let's hope")
-    
 
+conf_records = [
+    conf_to_dns(record, domain, public_ip)
+    for domain, records in CONF.dns_records.items()
+    for record in records
+]
 
 
 # url, json_ = client.generate_http_request("retrieve", "quercusphellos.online")

@@ -27,12 +27,15 @@ def get_from_env(s: str, info: ValidationInfo) -> str:
 
 
 EnvStr = Annotated[str, AfterValidator(get_from_env)]
+EditableRecordType = Literal["CNAME", "A"]
+FixedRecordType = Literal["NS"]
+DNSRecordType = EditableRecordType | FixedRecordType
 
 
-class DNSRecord(BaseModel):
+class ConfRecord(BaseModel):
     name: str
-    type: Literal["NS", "A", "CNAME"]
-    content: str
+    type: EditableRecordType
+    content: str | None = None
 
 
 class Configuration(BaseModel):
@@ -40,7 +43,7 @@ class Configuration(BaseModel):
     secretapikey: EnvStr
     ipv4_endpoint: HttpUrl
     dns_endpoint: HttpUrl
-    dns_records: dict[str, list[DNSRecord]]
+    dns_records: dict[str, list[ConfRecord]]
 
 
 def GetConfiguration():

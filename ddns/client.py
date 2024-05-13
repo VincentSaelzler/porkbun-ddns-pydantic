@@ -2,7 +2,7 @@ from ipaddress import IPv4Address
 from typing import Literal
 from pydantic import BaseModel
 import requests
-from conf import CONF, DNSRecord
+from conf import CONF, ConfRecord, EditableRecordType
 
 GetEndpoint = Literal["ping", "retrieve"]
 SetEndpoint = Literal["editByNameType"]
@@ -18,12 +18,18 @@ class PingResponse(Response):
     yourIp: IPv4Address
 
 
-class PorkbunDNSRecord(DNSRecord):
+class PorkbunRecord(ConfRecord):
     id: str
 
 
+class DNSRecord(BaseModel):
+    name: str
+    type: EditableRecordType
+    content: str
+
+
 class DomainResponse(Response):
-    records: list[PorkbunDNSRecord]
+    records: list[PorkbunRecord]
 
 
 class Body(BaseModel):
