@@ -8,6 +8,10 @@ from conf import CONF, ConfigRecord, EditableRecordType
 
 
 class EditableRecord(BaseModel):
+    # https://github.com/pydantic/pydantic/issues/1303
+    def __hash__(self):
+        return hash((type(self),) + tuple(self.__dict__.values()))
+
     name: str
     type: EditableRecordType
     content: str
@@ -34,37 +38,23 @@ def conform_porkbun_record(porkbun_record: client.PorkbunRecord):
     return EditableRecord.model_validate(porkbun_record.model_dump())
 
 
-public_ip = client_mock.get_public_ip()
-for domain in CONF.dns_records:
-    # desired configuration from conf.json file
-    desired_records = [
-        conform_config_record(record, domain, public_ip)
-        for record in CONF.dns_records[domain]
-    ]
-    # actual configuration from porkbun api
-    actual_records = [record for record in client_mock.get_records(domain)]
-    print("hoaky")
+def main():
 
-# url, json_ = client.generate_http_request("retrieve", "quercusphellos.online")
-# response = client.http_post(url, json_)
-# records = client.retrieve(response)
-
-# url, json_ = client.generate_set_request(
-#     "editByNameType", "quercusphellos.online", records[0]
-# )
-# response = client.http_post(url, json_)
+    public_ip = client_mock.get_public_ip()
+    for domain in CONF.dns_records:
+        # desired configuration from conf.json file
+        desired_records = [
+            conform_config_record(record, domain, public_ip)
+            for record in CONF.dns_records[domain]
+        ]
+        # actual configuration from porkbun api
+        actual_records = [
+            conform_porkbun_record(record) for record in client_mock.get_records(domain)
+        ]
+        _, _ = desired_records, actual_records
+        print("done with main function")
 
 
-# url, json_ = client.generate_set_request(
-#     "editByNameType", "quercusphellos.online", records[1]
-# )
-
-
-# response = client.http_post(url, json_)
-# response_bytes = client.get_http("ping", None)
-# public_ip = client.get_ip(response_bytes)
-
-# # response_bytes = client.get_http("retrieve", "quercusphellos.online")
-
-
-print("more functional")
+if __name__ == "__main__":
+    main()
+    print("done with main script")
