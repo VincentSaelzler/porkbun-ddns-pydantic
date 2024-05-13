@@ -1,6 +1,6 @@
 import os
-from pydantic import AfterValidator, BaseModel, HttpUrl, ValidationInfo
-from typing import Annotated, Literal
+from pydantic import BaseModel, BeforeValidator, HttpUrl, ValidationInfo
+from typing import Annotated, Any, Literal
 from pathlib import Path
 
 
@@ -8,25 +8,24 @@ from pathlib import Path
 _CONFIG_FILE = Path(__file__).parent / "conf.json"
 
 
-def get_from_env(s: str, info: ValidationInfo) -> str:
+def get_from_env(v: Any, info: ValidationInfo) -> str:
     """
     prioritize values in _CONFIG_FILE
     if unset, get from OS environment variables
     fail if non-existent in both locations
     """
-    match info.field_name:
-        case str():
+    match info.field_name, v:
+        case str() as field_name, str() | None:
             # prioritize the setting in _CONFIG_FILE
-            if s != "":
-                return s
-            # check environment variables
-            var_name = info.field_name.upper()
-            return os.environ[var_name]
-        case None:
+            # then check environment variables
+            return v or os.environ[field_name.upper()]
+        case str(), _:
+            raise TypeError("incoming value must be str | None")
+        case None, _:
             raise RuntimeError("unable to determine field name")
 
 
-EnvStr = Annotated[str, AfterValidator(get_from_env)]
+EnvStr = Annotated[str, BeforeValidator(get_from_env)]
 EditableRecordType = Literal["CNAME", "A"]
 FixedRecordType = Literal["NS"]
 DNSRecordType = EditableRecordType | FixedRecordType
