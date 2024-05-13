@@ -4,7 +4,7 @@ from client import PorkbunRecord
 
 
 def get_public_ip():
-    return IPv4Address("69.69.69.69")
+    return IPv4Address("4.20.4.20")
 
 
 def get_records(domain: str):
