@@ -1,9 +1,9 @@
-import unittest
+from unittest import TestCase
 from copy import deepcopy
 from main import EditableRecord
 
 
-class TestEditableRecords(unittest.TestCase):
+class TestSetOperations(TestCase):
     def setUp(self):
         self.duplicate_records = [
             EditableRecord(
