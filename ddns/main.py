@@ -4,16 +4,17 @@ from conf import CONF, ConfRecord
 
 
 def conf_to_dns(conf_record: ConfRecord, domain: str, public_ip: IPv4Address):
-    match conf_record.type:
-        case "A":
-            default_content = str(public_ip)
-        case "CNAME":
-            default_content = domain
+    def default_content():
+        match conf_record.type:
+            case "A":
+                return str(public_ip)
+            case "CNAME":
+                return domain
 
     return client.DNSRecord(
         name=conf_record.name,
         type=conf_record.type,
-        content=conf_record.content or default_content,
+        content=conf_record.content or default_content(),
     )
 
 

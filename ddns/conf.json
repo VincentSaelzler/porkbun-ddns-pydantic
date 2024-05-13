@@ -12,6 +12,16 @@
             {
                 "name": "www.quercusphellos.online",
                 "type": "CNAME"
+            },
+            {
+                "name": "ftwenty.quercusphellos.online",
+                "type": "A",
+                "content": "4.20.4.20"
+            },
+            {
+                "name": "external.quercusphellos.online",
+                "type": "CNAME",
+                "content": "porkbun.com"
             }
         ]
     }
