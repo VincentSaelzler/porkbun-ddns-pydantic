@@ -2,7 +2,7 @@ from ipaddress import IPv4Address
 from typing import Literal
 from pydantic import BaseModel
 import requests
-from conf import CONF, EditableRecordType, FixedRecordType
+from conf import CONF, RecordType, FixedRecordType
 
 
 GetEndpoint = Literal["ping", "retrieve"]
@@ -22,7 +22,7 @@ class PingResponse(Response):
 class PorkbunRecord(BaseModel):
     id: str
     name: str
-    type: EditableRecordType | FixedRecordType
+    type: RecordType | FixedRecordType
     content: str
 
 

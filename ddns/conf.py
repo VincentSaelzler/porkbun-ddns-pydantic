@@ -1,8 +1,9 @@
 import os
-from pydantic import BaseModel, BeforeValidator, HttpUrl, ValidationInfo
-from typing import Annotated, Any, Literal
+from pydantic import BaseModel, BeforeValidator, ConfigDict, HttpUrl, ValidationInfo
+from typing import Annotated, Any
 from pathlib import Path
 
+import model
 
 # conf.json must be in the same directory as this (conf.py) file
 _CONFIG_FILE = Path(__file__).parent / "conf.json"
@@ -26,17 +27,16 @@ def get_from_env(v: Any, info: ValidationInfo) -> str:
 
 
 EnvStr = Annotated[str, BeforeValidator(get_from_env)]
-EditableRecordType = Literal["CNAME", "A"]
-FixedRecordType = Literal["NS"]
 
 
 class ConfigRecord(BaseModel):
     name: str
-    type: EditableRecordType
+    type: model.RecordType
     content: str | None = None
 
 
 class Configuration(BaseModel):
+    model_config = ConfigDict(frozen=True)
     apikey: EnvStr
     secretapikey: EnvStr
     ipv4_endpoint: HttpUrl

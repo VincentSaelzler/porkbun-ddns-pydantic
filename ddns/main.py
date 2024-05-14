@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 import client
 import client_mock
-from conf import CONF, ConfigRecord, EditableRecordType
+from conf import CONF, ConfigRecord, RecordType
 
 
 class EditableRecord(BaseModel):
@@ -13,7 +13,7 @@ class EditableRecord(BaseModel):
         return hash((type(self),) + tuple(self.__dict__.values()))
 
     name: str
-    type: EditableRecordType
+    type: RecordType
     content: str
 
 
