@@ -9,6 +9,10 @@ GetEndpoint = Literal["ping", "retrieve"]
 SetEndpoint = Literal["editByNameType"]
 
 
+# unmanaged types will be left as-is on porkbun
+UnmanagedRecordType = Literal["MX", "ALIAS", "TXT", "NS", "AAAA", "SRV", "TLSA", "CAA"]
+
+
 class Response(FrozenModel):
     # raises exception for any other status
     status: Literal["SUCCESS"]
@@ -22,7 +26,7 @@ class PingResponse(Response):
 class PorkbunRecord(FrozenModel):
     id: str
     name: str
-    type: str
+    type: EditableRecordType | UnmanagedRecordType
     content: str
 
 

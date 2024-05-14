@@ -56,17 +56,19 @@ def main():
         existing_porkbun_records = get_existing_records(domain)
         existing_records = existing_porkbun_records.keys()
 
-        # use set operations to determine actions for records
-        for new_record in desired_records - existing_records:
-            print("create ", new_record.model_dump_json())
-
-        for matching_record in desired_records & existing_records:
-            matching_porkbun_record = existing_porkbun_records[matching_record]
-            print("keep ", matching_porkbun_record.model_dump_json())
-
+        # delete old records before creating new ones!
         for old_record in existing_records - desired_records:
             old_porkbun_record = existing_porkbun_records[old_record]
             print("delete ", old_porkbun_record.model_dump_json())
+
+        # create new records
+        for new_record in desired_records - existing_records:
+            print("create ", new_record.model_dump_json())
+
+        # log records that stayed the same
+        for matching_record in desired_records & existing_records:
+            matching_porkbun_record = existing_porkbun_records[matching_record]
+            print("keep ", matching_porkbun_record.model_dump_json())
 
         print("done with main function")
 
