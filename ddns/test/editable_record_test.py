@@ -1,6 +1,6 @@
 from unittest import TestCase
 from copy import deepcopy
-from main import EditableRecord
+from main import EditableRecord, deduplicate
 
 
 class TestSetOperations(TestCase):
@@ -98,3 +98,34 @@ class TestSetOperations(TestCase):
         symmetric_difference = standard_set ^ copy_set
         self.assertEqual(len(symmetric_difference), 0)
         self.assertEqual(symmetric_difference, set())
+
+
+class TestMain(TestCase):
+    def setUp(self):
+        self.duplicate_records = [
+            EditableRecord(
+                name="quercusphellos.online", type="A", content="137.220.108.97"
+            ),
+            EditableRecord(
+                name="quercusphellos.online", type="A", content="137.220.108.97"
+            ),
+        ]
+        self.standard_records = [
+            EditableRecord(
+                name="quercusphellos.online", type="A", content="137.220.108.97"
+            ),
+            EditableRecord(
+                name="www.quercusphellos.online",
+                type="CNAME",
+                content="quercusphellos.online",
+            ),
+        ]
+
+    def test_deduplicate_fail(self):
+        with self.assertRaises(ValueError):
+            _ = deduplicate(self.duplicate_records)
+
+    def test_deduplicate_pass(self):
+        standard_set = set(self.standard_records)
+        deduplicated_set = deduplicate(self.standard_records)
+        self.assertEqual(standard_set, deduplicated_set)
