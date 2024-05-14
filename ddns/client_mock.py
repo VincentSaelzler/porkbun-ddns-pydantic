@@ -2,7 +2,7 @@ from client import PorkbunRecord
 
 
 def get_public_ip():
-    return "4.20.4.20"
+    return "69.69.69.69"
 
 
 def get_records(domain: str):
