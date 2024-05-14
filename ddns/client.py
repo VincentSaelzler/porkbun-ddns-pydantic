@@ -1,9 +1,9 @@
 from ipaddress import IPv4Address
 from typing import Literal
-from pydantic import BaseModel
-import requests
-from conf import CONF, RecordType, FixedRecordType
 
+import requests
+from conf import CONF
+from pydantic import BaseModel
 
 GetEndpoint = Literal["ping", "retrieve"]
 SetEndpoint = Literal["editByNameType"]
