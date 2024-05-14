@@ -1,23 +1,23 @@
-from unittest import TestCase
 from copy import deepcopy
-from main import EditableRecord, deduplicate
+from unittest import TestCase
+
+from model import Record
 
 
 class TestSetOperations(TestCase):
+    """
+    Confirm that the model.Record class functions as expected
+    with regard to set and dict operations
+    """
+
     def setUp(self):
         self.duplicate_records = [
-            EditableRecord(
-                name="quercusphellos.online", type="A", content="137.220.108.97"
-            ),
-            EditableRecord(
-                name="quercusphellos.online", type="A", content="137.220.108.97"
-            ),
+            Record(name="quercusphellos.online", type="A", content="137.220.108.97"),
+            Record(name="quercusphellos.online", type="A", content="137.220.108.97"),
         ]
         self.standard_records = [
-            EditableRecord(
-                name="quercusphellos.online", type="A", content="137.220.108.97"
-            ),
-            EditableRecord(
+            Record(name="quercusphellos.online", type="A", content="137.220.108.97"),
+            Record(
                 name="www.quercusphellos.online",
                 type="CNAME",
                 content="quercusphellos.online",
@@ -25,18 +25,16 @@ class TestSetOperations(TestCase):
         ]
         self.standard_records_copy = deepcopy(self.standard_records)
         self.standard_records_backwards = [
-            EditableRecord(
+            Record(
                 name="www.quercusphellos.online",
                 type="CNAME",
                 content="quercusphellos.online",
             ),
-            EditableRecord(
-                name="quercusphellos.online", type="A", content="137.220.108.97"
-            ),
+            Record(name="quercusphellos.online", type="A", content="137.220.108.97"),
         ]
         self.fun_records = [
-            EditableRecord(name="quercusphellos.online", type="A", content="4.20.4.20"),
-            EditableRecord(
+            Record(name="quercusphellos.online", type="A", content="4.20.4.20"),
+            Record(
                 name="www.quercusphellos.online",
                 type="CNAME",
                 content="quercusphellos.online",
@@ -67,7 +65,7 @@ class TestSetOperations(TestCase):
         intersection = standard_set & fun_set
         expected_intersection = set(
             [
-                EditableRecord(
+                Record(
                     name="www.quercusphellos.online",
                     type="CNAME",
                     content="quercusphellos.online",
@@ -82,10 +80,8 @@ class TestSetOperations(TestCase):
         symmetric_difference = standard_set ^ fun_set
         expected_symmetric_difference = set(
             [
-                EditableRecord(
-                    name="quercusphellos.online", type="A", content="4.20.4.20"
-                ),
-                EditableRecord(
+                Record(name="quercusphellos.online", type="A", content="4.20.4.20"),
+                Record(
                     name="quercusphellos.online", type="A", content="137.220.108.97"
                 ),
             ]
@@ -98,34 +94,3 @@ class TestSetOperations(TestCase):
         symmetric_difference = standard_set ^ copy_set
         self.assertEqual(len(symmetric_difference), 0)
         self.assertEqual(symmetric_difference, set())
-
-
-class TestMain(TestCase):
-    def setUp(self):
-        self.duplicate_records = [
-            EditableRecord(
-                name="quercusphellos.online", type="A", content="137.220.108.97"
-            ),
-            EditableRecord(
-                name="quercusphellos.online", type="A", content="137.220.108.97"
-            ),
-        ]
-        self.standard_records = [
-            EditableRecord(
-                name="quercusphellos.online", type="A", content="137.220.108.97"
-            ),
-            EditableRecord(
-                name="www.quercusphellos.online",
-                type="CNAME",
-                content="quercusphellos.online",
-            ),
-        ]
-
-    def test_deduplicate_fail(self):
-        with self.assertRaises(ValueError):
-            _ = deduplicate(self.duplicate_records)
-
-    def test_deduplicate_pass(self):
-        standard_set = set(self.standard_records)
-        deduplicated_set = deduplicate(self.standard_records)
-        self.assertEqual(standard_set, deduplicated_set)
