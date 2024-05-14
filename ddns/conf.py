@@ -34,6 +34,21 @@ class ConfigRecord(model.FrozenModel):
     type: model.RecordType
     content: str | None = None
 
+    def with_default_content(self, domain: str, public_ip: str):
+        def default_content():
+            match self.type:
+                case "A":
+                    return str(public_ip)
+                case "CNAME":
+                    return domain
+
+        x = type(self)
+        return type(self)(
+            name=self.name,
+            type=self.type,
+            content=self.content or default_content(),
+        )
+
 
 class Configuration(model.FrozenModel):
     apikey: EnvStr

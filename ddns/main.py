@@ -1,34 +1,16 @@
 import client
 import client_mock
-
-# import client_mock
 from conf import CONF, ConfigRecord
-
-# from pydantic import BaseModel
-
-
-def append_default_content(conf_record: ConfigRecord, domain: str, public_ip: str):
-    def default_content():
-        match conf_record.type:
-            case "A":
-                return str(public_ip)
-            case "CNAME":
-                return domain
-
-    return ConfigRecord(
-        name=conf_record.name,
-        type=conf_record.type,
-        content=conf_record.content or default_content(),
-    )
+from model import RecordItentifier
 
 
-# def deduplicate(editable_records: list[EditableRecord]):
-#     distinct_records = set(editable_records)
-#     if len(distinct_records) != len(editable_records):
-#         raise ValueError(
-#             f"no duplicate records allowed. input: {str(editable_records)}"
-#         )
-#     return distinct_records
+def deduplicate(editable_records: list[ConfigRecord]):
+    distinct_records = set(editable_records)
+    if len(distinct_records) != len(editable_records):
+        raise ValueError(
+            f"no duplicate records allowed. input: {str(editable_records)}"
+        )
+    return distinct_records
 
 
 # def conform_porkbun_record(porkbun_record: client.PorkbunRecord):
@@ -41,8 +23,13 @@ def main():
 
         config_records = [r for r in CONF.dns_records[domain]]
         config_records_with_defaults = [
-            append_default_content(r, domain, public_ip) for r in config_records
+            r.with_default_content(domain, public_ip) for r in config_records
         ]
+        config_record_identifiers = [
+            RecordItentifier.model_validate(r.model_dump())
+            for r in config_records_with_defaults
+        ]
+        desired_records = set(config_record_identifiers)
 
         # config_records_with_defaults = [r for r in CONF.dns_records[domain]]
         # desired configuration from conf.json file
