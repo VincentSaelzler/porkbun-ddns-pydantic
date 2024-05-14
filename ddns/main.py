@@ -1,26 +1,25 @@
-# from ipaddress import IPv4Address
+import client
+import client_mock
 
-# import client
 # import client_mock
-from conf import CONF
+from conf import CONF, ConfigRecord
 
 # from pydantic import BaseModel
 
-# def conform_config_record(
-#     conf_record: ConfigRecord, domain: str, public_ip: IPv4Address
-# ):
-#     def default_content():
-#         match conf_record.type:
-#             case "A":
-#                 return str(public_ip)
-#             case "CNAME":
-#                 return domain
 
-#     return EditableRecord(
-#         name=conf_record.name,
-#         type=conf_record.type,
-#         content=conf_record.content or default_content(),
-#     )
+def append_default_content(conf_record: ConfigRecord, domain: str, public_ip: str):
+    def default_content():
+        match conf_record.type:
+            case "A":
+                return str(public_ip)
+            case "CNAME":
+                return domain
+
+    return ConfigRecord(
+        name=conf_record.name,
+        type=conf_record.type,
+        content=conf_record.content or default_content(),
+    )
 
 
 # def deduplicate(editable_records: list[EditableRecord]):
@@ -36,28 +35,36 @@ from conf import CONF
 #     return EditableRecord.model_validate(porkbun_record.model_dump())
 
 
-# def main():
+def main():
+    public_ip = client_mock.get_public_ip()
+    for domain in CONF.dns_records:
 
-#     public_ip = client_mock.get_public_ip()
-#     for domain in CONF.dns_records:
-#         # desired configuration from conf.json file
-#         desired_records = deduplicate(
-#             [
-#                 conform_config_record(record, domain, public_ip)
-#                 for record in CONF.dns_records[domain]
-#             ]
-#         )
-#         # actual configuration from porkbun api
-#         actual_records = deduplicate(
-#             [
-#                 conform_porkbun_record(record)
-#                 for record in client_mock.get_records(domain)
-#             ]
-#         )
-#         _, _ = desired_records, actual_records
-#         print("done with main function")
+        config_records = [r for r in CONF.dns_records[domain]]
+        config_records_with_defaults = [
+            append_default_content(r, domain, public_ip) for r in config_records
+        ]
+
+        # config_records_with_defaults = [r for r in CONF.dns_records[domain]]
+        # desired configuration from conf.json file
+        # desired_records = deduplicate(
+
+        #             [
+        #                 conform_config_record(record, domain, public_ip)
+        #                 for record in CONF.dns_records[domain]
+        #             ]
+        #         )
+        #         # actual configuration from porkbun api
+        #         actual_records = deduplicate(
+        #             [
+        #                 conform_porkbun_record(record)
+        #                 for record in client_mock.get_records(domain)
+        #             ]
+        #         )
+        #         _, _ = desired_records, actual_records
+        print("done with main function")
 
 
 if __name__ == "__main__":
-    # main()
+
+    main()
     print("done with main script")

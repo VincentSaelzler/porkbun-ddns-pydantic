@@ -22,7 +22,7 @@ class PingResponse(Response):
 class PorkbunRecord(BaseModel):
     id: str
     name: str
-    type: RecordType | FixedRecordType
+    type: str
     content: str
 
 
@@ -77,7 +77,7 @@ def generate_http_request(endpoint: GetEndpoint, domain: str | None = None):
 def get_public_ip():
     request = generate_http_request("ping")
     response = http_post(request)
-    return PingResponse.model_validate_json(response).yourIp
+    return str(PingResponse.model_validate_json(response).yourIp)
 
 
 def get_records(domain: str):

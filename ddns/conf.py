@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Annotated, Any
 
 import model
-from pydantic import BaseModel, BeforeValidator, HttpUrl, ValidationInfo
+from pydantic import BeforeValidator, HttpUrl, ValidationInfo
 
 # conf.json must be in the same directory as this (conf.py) file
 _CONFIG_FILE = Path(__file__).parent / "conf.json"
@@ -29,24 +29,24 @@ def get_from_env(v: Any, info: ValidationInfo) -> str:
 EnvStr = Annotated[str, BeforeValidator(get_from_env)]
 
 
-class RecordItentifier(BaseModel):
+class ConfigRecord(model.FrozenModel):
     name: str
     type: model.RecordType
     content: str | None = None
 
 
-class Configuration(BaseModel):
+class Configuration(model.FrozenModel):
     apikey: EnvStr
     secretapikey: EnvStr
     ipv4_endpoint: HttpUrl
     dns_endpoint: HttpUrl
-    dns_records: dict[str, list[RecordItentifier]]
+    dns_records: dict[str, list[ConfigRecord]]
 
 
-def GetConfiguration():
+def get_configuration():
     with open(_CONFIG_FILE, "r") as f:
         config_file_contents = f.read()
         return Configuration.model_validate_json(config_file_contents, strict=True)
 
 
-CONF = GetConfiguration()
+CONF = get_configuration()
