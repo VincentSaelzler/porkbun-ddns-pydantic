@@ -3,10 +3,10 @@ from typing import Literal, get_args
 
 import requests
 from conf import CONF
-from model import EditableRecordType, FrozenModel
+from model import EditableRecordType, FrozenModel, Record
 
 GetEndpoint = Literal["ping", "retrieve"]
-SetEndpoint = Literal["editByNameType"]
+SetEndpoint = Literal["create"]
 
 
 # unmanaged types will be left as-is on porkbun
@@ -39,6 +39,12 @@ class Body(FrozenModel):
     secretapikey: str
 
 
+class CreateBody(Body):
+    name: str
+    type: EditableRecordType
+    content: str
+
+
 class Request(FrozenModel):
     url: str
     body: Body
@@ -62,7 +68,7 @@ def http_post(request: Request):
 
 
 # parse logical request to http request
-def generate_http_request(endpoint: GetEndpoint, domain: str | None = None):
+def generate_get_request(endpoint: GetEndpoint, domain: str | None = None):
     match endpoint, domain:
         case "ping", _:
             return Request(
@@ -78,14 +84,50 @@ def generate_http_request(endpoint: GetEndpoint, domain: str | None = None):
             raise ValueError("domain is required for retrieve endpoint")
 
 
+def compute_name(domain: str, raw_name: str):
+    # external links are not allowed
+    if not raw_name.endswith(domain):
+        raise ValueError(f"must be a subdomain (or wildcard record) within {domain}")
+    # root domain
+    if raw_name == domain:
+        return ""
+    # wildcard
+    if raw_name.startswith("*"):
+        return "*"
+    # subdomain
+    domain_with_leading_dot = "." + domain
+    return raw_name.replace(domain_with_leading_dot, "")
+
+
+# def generate_set_request(
+#     endpoint: SetEndpoint, domain: str, record: PorkbunRecord | Record
+# ):
+#     match endpoint, record:
+#         case "create", _:
+
+#             subdomain_with_final_dot = record.name.replace(domain, "")
+#             subdomain = subdomain_with_final_dot[:-1]
+
+#             create_body = CreateBody(
+#                 apikey=CONF.apikey,
+#                 secretapikey=
+#             )
+
+
+#             return Request(
+#                 url="/".join([str(CONF.ipv4_endpoint), endpoint]),
+#                 body=Body(apikey=CONF.apikey, secretapikey=CONF.secretapikey),
+#             )
+
+
 def get_public_ip():
-    request = generate_http_request("ping")
+    request = generate_get_request("ping")
     response = http_post(request)
     return str(PingResponse.model_validate_json(response).yourIp)
 
 
 def get_records(domain: str):
-    request = generate_http_request("retrieve", domain)
+    request = generate_get_request("retrieve", domain)
     response = http_post(request)
     records = DomainResponse.model_validate_json(response).records
     # only return records that the app can create/update/delete
@@ -100,8 +142,6 @@ def get_records(domain: str):
 #     json_ = record.model_dump()
 #     json_.update(API_KEYS)
 
-#     subdomain_with_final_dot = record.name.replace(domain, "")
-#     subdomain = subdomain_with_final_dot[:-1]
 
 #     match endpoint, subdomain:
 #         case "editByNameType", "":
