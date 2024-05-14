@@ -2,7 +2,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
-RecordType = Literal["CNAME", "A"]
+EditableRecordType = Literal["CNAME", "A"]
 
 
 class FrozenModel(BaseModel):
@@ -11,5 +11,5 @@ class FrozenModel(BaseModel):
 
 class RecordItentifier(FrozenModel):
     name: str
-    type: RecordType
+    type: EditableRecordType
     content: str | None

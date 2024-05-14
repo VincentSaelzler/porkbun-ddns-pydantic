@@ -1,15 +1,15 @@
 from ipaddress import IPv4Address
-from typing import Literal
+from typing import Literal, get_args
 
 import requests
 from conf import CONF
-from pydantic import BaseModel
+from model import EditableRecordType, FrozenModel
 
 GetEndpoint = Literal["ping", "retrieve"]
 SetEndpoint = Literal["editByNameType"]
 
 
-class Response(BaseModel):
+class Response(FrozenModel):
     # raises exception for any other status
     status: Literal["SUCCESS"]
 
@@ -19,7 +19,7 @@ class PingResponse(Response):
     yourIp: IPv4Address
 
 
-class PorkbunRecord(BaseModel):
+class PorkbunRecord(FrozenModel):
     id: str
     name: str
     type: str
@@ -30,12 +30,12 @@ class DomainResponse(Response):
     records: list[PorkbunRecord]
 
 
-class Body(BaseModel):
+class Body(FrozenModel):
     apikey: str
     secretapikey: str
 
 
-class Request(BaseModel):
+class Request(FrozenModel):
     url: str
     body: Body
 
@@ -84,8 +84,9 @@ def get_records(domain: str):
     request = generate_http_request("retrieve", domain)
     response = http_post(request)
     records = DomainResponse.model_validate_json(response).records
-    # leave NS records as-is; do not edit or delete
-    editable_records = [r for r in records if r.type != "NS"]
+    # only return records that the app can create/update/delete
+    # other records (e.g. NS records) are left as-is
+    editable_records = [r for r in records if r.type in get_args(EditableRecordType)]
     return editable_records
 
 

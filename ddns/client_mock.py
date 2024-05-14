@@ -22,5 +22,6 @@ def get_records(domain: str):
                     content="quercusphellos.online",
                 ),
             ]
+
         case _:
             raise NotImplementedError()

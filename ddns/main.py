@@ -29,25 +29,10 @@ def main():
             RecordItentifier.model_validate(r.model_dump())
             for r in config_records_with_defaults
         ]
-        desired_records = set(config_record_identifiers)
+        desired = set(config_record_identifiers)
 
-        # config_records_with_defaults = [r for r in CONF.dns_records[domain]]
-        # desired configuration from conf.json file
-        # desired_records = deduplicate(
+        porkbun_records = [r for r in client.get_records(domain)]
 
-        #             [
-        #                 conform_config_record(record, domain, public_ip)
-        #                 for record in CONF.dns_records[domain]
-        #             ]
-        #         )
-        #         # actual configuration from porkbun api
-        #         actual_records = deduplicate(
-        #             [
-        #                 conform_porkbun_record(record)
-        #                 for record in client_mock.get_records(domain)
-        #             ]
-        #         )
-        #         _, _ = desired_records, actual_records
         print("done with main function")
 
 

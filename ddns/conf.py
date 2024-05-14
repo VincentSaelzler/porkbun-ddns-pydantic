@@ -31,7 +31,7 @@ EnvStr = Annotated[str, BeforeValidator(get_from_env)]
 
 class ConfigRecord(model.FrozenModel):
     name: str
-    type: model.RecordType
+    type: model.EditableRecordType
     content: str | None = None
 
     def with_default_content(self, domain: str, public_ip: str):
@@ -42,7 +42,6 @@ class ConfigRecord(model.FrozenModel):
                 case "CNAME":
                     return domain
 
-        x = type(self)
         return type(self)(
             name=self.name,
             type=self.type,
