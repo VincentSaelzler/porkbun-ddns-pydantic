@@ -1,13 +1,19 @@
 from copy import deepcopy
 from unittest import TestCase
 
+from client import PorkbunRecord
+from main import model_to_record
 from model import Record
+
+# the Record type is hashable because
+# it is frozen and all of its fields are hashable
+# pyright: reportUnhashable=false
 
 
 class TestSetOperations(TestCase):
     """
     Confirm that the model.Record class functions as expected
-    with regard to set and dict operations
+    with regard to set operations
     """
 
     def setUp(self):
@@ -94,3 +100,62 @@ class TestSetOperations(TestCase):
         symmetric_difference = standard_set ^ copy_set
         self.assertEqual(len(symmetric_difference), 0)
         self.assertEqual(symmetric_difference, set())
+
+
+class TestDictOperations(TestCase):
+    """
+    Confirm that the model.Record class functions as expected
+    with regard to set operations
+    """
+
+    def setUp(self):
+        self.porkbun_a = PorkbunRecord(
+            id="399347448",
+            name="quercusphellos.online",
+            type="A",
+            content="137.220.108.97",
+        )
+        self.a = model_to_record(self.porkbun_a)
+        self.a_copy = deepcopy(self.a)
+        self.porkbun_cname = PorkbunRecord(
+            id="399348596",
+            name="www.quercusphellos.online",
+            type="CNAME",
+            content="quercusphellos.online",
+        )
+        self.cname = model_to_record(self.porkbun_cname)
+        self.existing_records = {
+            self.a: self.porkbun_a,
+            self.cname: self.porkbun_cname,
+        }
+        self.existing_records_duplicated = {
+            self.a: self.porkbun_a,
+            self.a_copy: self.porkbun_a,
+            self.cname: self.porkbun_cname,
+        }
+        self.ftwenty = Record(
+            name="quercusphellos.online", type="A", content="4.20.4.20"
+        )
+        self.fun_records = {self.ftwenty, self.cname}
+        self.desired_records = {
+            self.a,
+            self.cname,
+        }
+
+    def test_hashable_keys(self):
+        self.assertEqual(self.existing_records, self.existing_records_duplicated)
+
+    def test_create(self):
+        create = self.fun_records - self.existing_records.keys()
+        ftwentyset = {self.ftwenty}
+        self.assertEqual(create, ftwentyset)
+
+    def test_no_action(self):
+        matching_keys = self.desired_records & self.existing_records.keys()
+        matching = [self.existing_records[key] for key in matching_keys]
+        self.assertEqual(len(matching), len(self.existing_records))
+
+    def test_delete(self):
+        delete = self.existing_records.keys() - self.fun_records
+        aset = {self.a}
+        self.assertEqual(delete, aset)
