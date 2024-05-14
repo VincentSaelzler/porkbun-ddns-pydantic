@@ -9,7 +9,7 @@ class FrozenModel(BaseModel):
     model_config = ConfigDict(frozen=True)
 
 
-class RecordItentifier(FrozenModel):
+class Record(FrozenModel):
     name: str
     type: EditableRecordType
     content: str | None

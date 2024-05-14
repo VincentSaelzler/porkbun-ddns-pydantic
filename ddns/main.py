@@ -1,37 +1,56 @@
+from typing import Sequence, TypeVar
+
 import client
 import client_mock
-from conf import CONF, ConfigRecord
-from model import RecordItentifier
+from conf import CONF
+from model import BaseModel, Record
+from pydantic import BaseModel
+
+T = TypeVar("T")
 
 
-def deduplicate(editable_records: list[ConfigRecord]):
-    distinct_records = set(editable_records)
-    if len(distinct_records) != len(editable_records):
-        raise ValueError(
-            f"no duplicate records allowed. input: {str(editable_records)}"
-        )
+def list_to_set(records: list[T]):
+    distinct_records = set(records)
+    if len(distinct_records) != len(records):
+        raise ValueError(f"no duplicate records allowed. input: {str(records)}")
     return distinct_records
 
 
-# def conform_porkbun_record(porkbun_record: client.PorkbunRecord):
-#     return EditableRecord.model_validate(porkbun_record.model_dump())
+def records_to_record_set(records: list[Record]):
+    return list_to_set(records)
+
+
+def model_to_record(model: BaseModel):
+    return Record.model_validate(model.model_dump())
+
+
+def models_to_records(models: Sequence[BaseModel]):
+    return [model_to_record(m) for m in models]
+
+
+def models_to_record_set(models: Sequence[BaseModel]):
+    return records_to_record_set(models_to_records(models))
 
 
 def main():
     public_ip = client_mock.get_public_ip()
     for domain in CONF.dns_records:
 
-        config_records = [r for r in CONF.dns_records[domain]]
+        # get desired records
+        config_records = CONF.dns_records[domain]
         config_records_with_defaults = [
             r.with_default_content(domain, public_ip) for r in config_records
         ]
-        config_record_identifiers = [
-            RecordItentifier.model_validate(r.model_dump())
-            for r in config_records_with_defaults
-        ]
-        desired = set(config_record_identifiers)
+        desired_records = models_to_record_set(config_records_with_defaults)
 
-        porkbun_records = [r for r in client.get_records(domain)]
+        # get porkbun records
+        raw_porkbun_records = client_mock.get_records(domain)
+        # check that no duplicate records exist
+        _ = models_to_record_set(raw_porkbun_records)
+        existing_records = {
+            model_to_record(raw_record): raw_record
+            for raw_record in raw_porkbun_records
+        }
 
         print("done with main function")
 
