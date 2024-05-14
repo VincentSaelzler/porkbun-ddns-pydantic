@@ -32,25 +32,40 @@ def models_to_record_set(models: Sequence[BaseModel]):
     return records_to_record_set(models_to_records(models))
 
 
+def get_desired_records(domain: str, public_ip: str):
+    config_records = CONF.dns_records[domain]
+    config_records_with_defaults = [
+        r.with_default_content(domain, public_ip) for r in config_records
+    ]
+    return models_to_record_set(config_records_with_defaults)
+
+
+def get_existing_records(domain: str):
+    porkbun_records = client_mock.get_records(domain)
+    # check that no duplicate records exist
+    _ = models_to_record_set(porkbun_records)
+    return {model_to_record(raw_record): raw_record for raw_record in porkbun_records}
+
+
 def main():
     public_ip = client_mock.get_public_ip()
     for domain in CONF.dns_records:
 
-        # get desired records
-        config_records = CONF.dns_records[domain]
-        config_records_with_defaults = [
-            r.with_default_content(domain, public_ip) for r in config_records
-        ]
-        desired_records = models_to_record_set(config_records_with_defaults)
+        # desired records from config file; existing records from porkbun
+        desired_records = get_desired_records(domain, public_ip)
+        existing_porkbun_records = get_existing_records(domain)
 
-        # get porkbun records
-        raw_porkbun_records = client_mock.get_records(domain)
-        # check that no duplicate records exist
-        _ = models_to_record_set(raw_porkbun_records)
-        existing_records = {
-            model_to_record(raw_record): raw_record
-            for raw_record in raw_porkbun_records
-        }
+        # use set operations to determine actions for records
+        existing_records = existing_porkbun_records.keys()
+        create = desired_records - existing_records
+        keep = [
+            existing_porkbun_records[record]
+            for record in desired_records & existing_records
+        ]
+        delete = [
+            existing_porkbun_records[record]
+            for record in existing_records - desired_records
+        ]
 
         print("done with main function")
 
