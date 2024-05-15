@@ -40,4 +40,8 @@ def _mock_post(request: Request):
 def create_record(domain: str, record: Record):
     request = _generate_set_request("create", domain, record)
     _mock_post(request)
-    return Response(status="SUCCESS")
+
+
+def delete_record(domain: str, record: PorkbunRecord):
+    request = _generate_set_request("delete", domain, record)
+    _mock_post(request)

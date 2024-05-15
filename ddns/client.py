@@ -1,5 +1,5 @@
 from ipaddress import IPv4Address
-from typing import Literal, get_args
+from typing import Literal, Union, get_args
 
 import requests
 from conf import CONF
@@ -7,7 +7,7 @@ from model import EditableRecordType, FrozenModel, Record
 from pydantic import SerializeAsAny
 
 GetEndpoint = Literal["ping", "retrieve"]
-SetEndpoint = Literal["create"]
+SetEndpoint = Literal["create", "delete"]
 
 
 # unmanaged types will be left as-is on porkbun
@@ -101,8 +101,9 @@ def _compute_name(domain: str, raw_name: str):
 
 
 def _generate_set_request(
-    endpoint: SetEndpoint, domain: str, record: PorkbunRecord | Record
+    endpoint: SetEndpoint, domain: str, record: Union[PorkbunRecord, Record]
 ):
+
     match endpoint, record:
         case "create", Record():
             body = CreateBody(
@@ -118,6 +119,20 @@ def _generate_set_request(
             )
         case "create", PorkbunRecord():
             raise TypeError("create endpoint requires a record of type model.Record")
+        case "delete", PorkbunRecord():
+            return Request(
+                url="/".join([str(CONF.dns_endpoint), endpoint, domain, record.id]),
+                body=Body(apikey=CONF.apikey, secretapikey=CONF.secretapikey),
+            )
+        case "delete", Record():
+            raise TypeError(
+                "create endpoint requires a record of type client.PorkbunRecord"
+            )
+        case _:
+            # https://discuss.python.org/t/how-can-you-match-on-a-union-of-types/26785/6
+            raise RuntimeError(
+                "i don't think this can happen, but the static type checker says it can"
+            )
 
 
 def get_public_ip():
@@ -138,6 +153,13 @@ def get_records(domain: str):
 
 def create_record(domain: str, record: Record):
     request = _generate_set_request("create", domain, record)
+    response = _http_post(request)
+    # check for success response
+    _ = Response.model_validate_json(response)
+
+
+def delete_record(domain: str, record: PorkbunRecord):
+    request = _generate_set_request("delete", domain, record)
     response = _http_post(request)
     # check for success response
     _ = Response.model_validate_json(response)

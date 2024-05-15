@@ -41,14 +41,14 @@ def get_desired_records(domain: str, public_ip: str):
 
 
 def get_existing_records(domain: str):
-    porkbun_records = client_mock.get_records(domain)
+    porkbun_records = client.get_records(domain)
     # check that no duplicate records exist
     _ = models_to_record_set(porkbun_records)
     return {model_to_record(raw_record): raw_record for raw_record in porkbun_records}
 
 
 def main():
-    public_ip = client_mock.get_public_ip()
+    public_ip = client.get_public_ip()
     for domain in CONF.dns_records:
 
         # desired records from config file; existing records from porkbun
@@ -60,6 +60,7 @@ def main():
         for old_record in existing_records - desired_records:
             old_porkbun_record = existing_porkbun_records[old_record]
             print("delete ", old_porkbun_record.model_dump_json())
+            client.delete_record(domain, old_porkbun_record)
 
         # create new records
         for new_record in desired_records - existing_records:
