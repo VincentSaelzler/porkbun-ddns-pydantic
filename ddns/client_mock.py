@@ -1,7 +1,7 @@
 # need to borrow private methods from client
 # pyright: reportPrivateUsage=false
 
-from client import PorkbunRecord, Request, Response, _generate_set_request
+from client import PorkbunRecord, Request, _generate_set_request
 from model import Record
 
 
