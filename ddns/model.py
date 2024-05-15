@@ -12,4 +12,4 @@ class FrozenModel(BaseModel):
 class Record(FrozenModel):
     name: str
     type: EditableRecordType
-    content: str | None
+    content: str

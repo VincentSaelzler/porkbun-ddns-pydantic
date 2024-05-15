@@ -64,6 +64,7 @@ def main():
         # create new records
         for new_record in desired_records - existing_records:
             print("create ", new_record.model_dump_json())
+            client.create_record(domain, new_record)
 
         # log records that stayed the same
         for matching_record in desired_records & existing_records:
@@ -74,6 +75,5 @@ def main():
 
 
 if __name__ == "__main__":
-
     main()
     print("done with main script")
