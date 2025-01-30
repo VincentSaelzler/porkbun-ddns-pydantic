@@ -2,7 +2,7 @@
     "apikey": null,
     "secretapikey": null,
     "ipv4_endpoint": "https://api-ipv4.porkbun.com/api/json/v3",
-    "dns_endpoint": "https://porkbun.com/api/json/v3/dns",
+    "dns_endpoint": "https://api.porkbun.com/api/json/v3/dns",
     "dns_records": {
         "quercusphellos.online": [
             {
