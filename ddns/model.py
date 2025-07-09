@@ -2,14 +2,19 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
-EditableRecordType = Literal["CNAME", "A"]
+EditableDNSRecordType = Literal["CNAME", "A"]
 
 
 class FrozenModel(BaseModel):
     model_config = ConfigDict(frozen=True)
 
 
-class Record(FrozenModel):
+class DNSRecord(FrozenModel):
     name: str
-    type: EditableRecordType
+    type: EditableDNSRecordType
     content: str
+
+
+class PorkbunCredential(FrozenModel):
+    secretapikey: str
+    apikey: str

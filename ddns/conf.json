@@ -1,27 +1,25 @@
 {
-    "apikey": null,
-    "secretapikey": null,
     "ipv4_endpoint": "https://api-ipv4.porkbun.com/api/json/v3",
     "dns_endpoint": "https://api.porkbun.com/api/json/v3/dns",
     "dns_records": {
-        "quercusphellos.online": [
+        "saelzler.org": [
             {
-                "name": "quercusphellos.online",
+                "name": "saelzler.org",
                 "type": "A"
             },
             {
-                "name": "www.quercusphellos.online",
+                "name": "www.saelzler.org",
                 "type": "CNAME"
+            }
+        ],
+        "hearty.cooking": [
+            {
+                "name": "hearty.cooking",
+                "type": "A"
             },
             {
-                "name": "ftwenty.quercusphellos.online",
-                "type": "A",
-                "content": "4.20.4.20"
-            },
-            {
-                "name": "oldsub.quercusphellos.online",
-                "type": "CNAME",
-                "content": "newsub.quercusphellos.online"
+                "name": "www.hearty.cooking",
+                "type": "CNAME"
             }
         ]
     }

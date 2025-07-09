@@ -1,0 +1,17 @@
+LICENSE
+README.md
+pyproject.toml
+ddns/__init__.py
+ddns/client.py
+ddns/conf.py
+ddns/main.py
+ddns/model.py
+ddns/test/__init__.py
+ddns/test/client_test.py
+ddns/test/main_test.py
+ddns/test/record_test.py
+ddns_porkbun.egg-info/PKG-INFO
+ddns_porkbun.egg-info/SOURCES.txt
+ddns_porkbun.egg-info/dependency_links.txt
+ddns_porkbun.egg-info/requires.txt
+ddns_porkbun.egg-info/top_level.txt

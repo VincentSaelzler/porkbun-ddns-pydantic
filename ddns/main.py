@@ -1,9 +1,8 @@
 from typing import Sequence, TypeVar
 
 import client
-import client_mock
 from conf import CONF
-from model import BaseModel, Record
+from model import BaseModel, DNSRecord
 from pydantic import BaseModel
 
 T = TypeVar("T")
@@ -16,12 +15,12 @@ def list_to_set(records: list[T]):
     return distinct_records
 
 
-def records_to_record_set(records: list[Record]):
+def records_to_record_set(records: list[DNSRecord]):
     return list_to_set(records)
 
 
 def model_to_record(model: BaseModel):
-    return Record.model_validate(model.model_dump())
+    return DNSRecord.model_validate(model.model_dump())
 
 
 def models_to_records(models: Sequence[BaseModel]):

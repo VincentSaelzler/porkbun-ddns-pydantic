@@ -2,8 +2,8 @@ from ipaddress import IPv4Address
 from typing import Literal, Union, get_args
 
 import requests
-from conf import CONF
-from model import EditableRecordType, FrozenModel, Record
+from conf import CONF, PORKBUN_CRED
+from model import DNSRecord, EditableDNSRecordType, FrozenModel
 from pydantic import SerializeAsAny
 
 GetEndpoint = Literal["ping", "retrieve"]
@@ -27,7 +27,7 @@ class PingResponse(Response):
 class PorkbunRecord(FrozenModel):
     id: str
     name: str
-    type: EditableRecordType | UnmanagedRecordType
+    type: EditableDNSRecordType | UnmanagedRecordType
     content: str
 
 
@@ -42,7 +42,7 @@ class Body(FrozenModel):
 
 class CreateBody(Body):
     name: str
-    type: EditableRecordType
+    type: EditableDNSRecordType
     content: str
 
 
@@ -74,12 +74,16 @@ def _generate_get_request(endpoint: GetEndpoint, domain: str | None = None):
         case "ping", _:
             return Request(
                 url="/".join([str(CONF.ipv4_endpoint), endpoint]),
-                body=Body(apikey=CONF.apikey, secretapikey=CONF.secretapikey),
+                body=Body(
+                    apikey=PORKBUN_CRED.apikey, secretapikey=PORKBUN_CRED.secretapikey
+                ),
             )
         case "retrieve", str():
             return Request(
                 url="/".join([str(CONF.dns_endpoint), endpoint, domain]),
-                body=Body(apikey=CONF.apikey, secretapikey=CONF.secretapikey),
+                body=Body(
+                    apikey=PORKBUN_CRED.apikey, secretapikey=PORKBUN_CRED.secretapikey
+                ),
             )
         case "retrieve", None:
             raise ValueError("domain is required for retrieve endpoint")
@@ -101,14 +105,14 @@ def _compute_name(domain: str, raw_name: str):
 
 
 def _generate_set_request(
-    endpoint: SetEndpoint, domain: str, record: Union[PorkbunRecord, Record]
+    endpoint: SetEndpoint, domain: str, record: Union[PorkbunRecord, DNSRecord]
 ):
 
     match endpoint, record:
-        case "create", Record():
+        case "create", DNSRecord():
             body = CreateBody(
-                apikey=CONF.apikey,
-                secretapikey=CONF.secretapikey,
+                apikey=PORKBUN_CRED.apikey,
+                secretapikey=PORKBUN_CRED.secretapikey,
                 name=_compute_name(domain, record.name),
                 type=record.type,
                 content=record.content,
@@ -122,9 +126,11 @@ def _generate_set_request(
         case "delete", PorkbunRecord():
             return Request(
                 url="/".join([str(CONF.dns_endpoint), endpoint, domain, record.id]),
-                body=Body(apikey=CONF.apikey, secretapikey=CONF.secretapikey),
+                body=Body(
+                    apikey=PORKBUN_CRED.apikey, secretapikey=PORKBUN_CRED.secretapikey
+                ),
             )
-        case "delete", Record():
+        case "delete", DNSRecord():
             raise TypeError(
                 "create endpoint requires a record of type client.PorkbunRecord"
             )
@@ -147,11 +153,12 @@ def get_records(domain: str):
     records = DomainResponse.model_validate_json(response).records
     # only return records that the app can create/update/delete
     # other records (e.g. NS records) are left as-is
-    editable_records = [r for r in records if r.type in get_args(EditableRecordType)]
+    # HACK get_args is really sensitive to how EditableDNSRecordType is defined
+    editable_records = [r for r in records if r.type in get_args(EditableDNSRecordType)]
     return editable_records
 
 
-def create_record(domain: str, record: Record):
+def create_record(domain: str, record: DNSRecord):
     request = _generate_set_request("create", domain, record)
     response = _http_post(request)
     # check for success response

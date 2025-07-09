@@ -1,0 +1,11 @@
+[project]
+name = "ddns-porkbun"
+version = "4.20"
+dependencies = [
+    "loadcredential",
+    "pydantic",
+    "requests",
+]
+
+# [project.scripts]
+# mootimecmd = "moo_hi.core:mootime"
