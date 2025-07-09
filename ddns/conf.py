@@ -1,8 +1,9 @@
 from pathlib import Path
 
-import model
 from loadcredential import Credentials
 from pydantic import HttpUrl
+
+import ddns.model as model
 
 # conf.json must be in the same directory as this (conf.py) file
 _CONFIG_FILE = Path(__file__).parent / "conf.json"

@@ -2,9 +2,10 @@ from ipaddress import IPv4Address
 from typing import Literal, Union, get_args
 
 import requests
-from conf import CONF, PORKBUN_CRED
-from model import DNSRecord, EditableDNSRecordType, FrozenModel
 from pydantic import SerializeAsAny
+
+from ddns.conf import CONF, PORKBUN_CRED
+from ddns.model import DNSRecord, EditableDNSRecordType, FrozenModel
 
 GetEndpoint = Literal["ping", "retrieve"]
 SetEndpoint = Literal["create", "delete"]

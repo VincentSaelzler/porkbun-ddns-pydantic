@@ -7,5 +7,5 @@ dependencies = [
     "requests",
 ]
 
-# [project.scripts]
-# mootimecmd = "moo_hi.core:mootime"
+[project.scripts]
+syncrecords = "ddns.main:main"

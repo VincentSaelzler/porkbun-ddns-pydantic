@@ -1,8 +1,0 @@
-Metadata-Version: 2.4
-Name: ddns-porkbun
-Version: 4.20
-License-File: LICENSE
-Requires-Dist: loadcredential
-Requires-Dist: pydantic
-Requires-Dist: requests
-Dynamic: license-file

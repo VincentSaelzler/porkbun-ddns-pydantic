@@ -1,9 +1,10 @@
 from typing import Sequence, TypeVar
 
-import client
-from conf import CONF
-from model import BaseModel, DNSRecord
 from pydantic import BaseModel
+
+from ddns import client
+from ddns.conf import CONF
+from ddns.model import BaseModel, DNSRecord
 
 T = TypeVar("T")
 
