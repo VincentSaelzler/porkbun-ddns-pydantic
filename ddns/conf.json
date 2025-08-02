@@ -22,5 +22,15 @@
                 "type": "CNAME"
             }
         ]
+        "vincentsaelzler.com": [
+            {
+                "name": "vincentsaelzler.com",
+                "type": "A"
+            },
+            {
+                "name": "www.vincentsaelzler.com",
+                "type": "CNAME"
+            }
+        ]
     }
 }
