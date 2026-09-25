@@ -4,32 +4,8 @@
     "dns_records": {
         "saelzler.org": [
             {
-                "name": "saelzler.org",
+                "name": "walter.saelzler.org",
                 "type": "A"
-            },
-            {
-                "name": "www.saelzler.org",
-                "type": "CNAME"
-            }
-        ],
-        "hearty.cooking": [
-            {
-                "name": "hearty.cooking",
-                "type": "A"
-            },
-            {
-                "name": "www.hearty.cooking",
-                "type": "CNAME"
-            }
-        ],
-        "vincentsaelzler.com": [
-            {
-                "name": "vincentsaelzler.com",
-                "type": "A"
-            },
-            {
-                "name": "www.vincentsaelzler.com",
-                "type": "CNAME"
             }
         ]
     }

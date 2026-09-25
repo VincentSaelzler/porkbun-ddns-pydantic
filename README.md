@@ -4,8 +4,9 @@
 ## Secrets
 Use linux environment variables for development, and systemd credentials for production.
 ```
-echo export APIKEY=pk1_redacted >> ~/.bashrc
-echo export SECRETAPIKEY=sk1_redacted >> ~/.bashrc
+echo export PORKBUN_API_KEY=pk1_redacted >> ~/.bashrc
+echo export PORKBUN_SECRET_API_KEY=sk1_redacted >> ~/.bashrc
+source ~/.bashrc
 ```
 
 ## Virtual Environments
@@ -18,10 +19,12 @@ python3 -m venv .venv
 source .venv/bin/activate
 
 pip install --upgrade pip
-pip install --upgrade pip-tools
+pip install --upgrade pip-tools shiv
 
 pip-compile
 pip-sync
+
+python -m ddns.main
 ```
 
 ## Limitations
