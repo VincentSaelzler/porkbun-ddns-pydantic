@@ -9,3 +9,6 @@ dependencies = [
 
 [project.scripts]
 syncrecords = "ddns.main:main"
+
+[tool.setuptools.package-data]
+ddns = ["conf.json"]
