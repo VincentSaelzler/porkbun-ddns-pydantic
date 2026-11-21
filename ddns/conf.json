@@ -2,6 +2,12 @@
     "ipv4_endpoint": "https://api-ipv4.porkbun.com/api/json/v3",
     "dns_endpoint": "https://api.porkbun.com/api/json/v3/dns",
     "dns_records": {
+        "saelzler.com": [
+            {
+                "name": "vincent.saelzler.com",
+                "type": "A"
+            }
+        ],
         "saelzler.org": [
             {
                 "name": "walter.saelzler.org",

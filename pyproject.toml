@@ -1,6 +1,6 @@
 [project]
 name = "ddns-porkbun"
-version = "4.20"
+version = "4.21"
 dependencies = [
     "loadcredential",
     "pydantic",
