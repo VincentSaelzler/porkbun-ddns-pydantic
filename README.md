@@ -10,6 +10,12 @@ The `loadcredential` library loads
 
 Typically the systemd credentials are in production servers and the environment variables are used for development.
 
+## Configuration
+
+Configure your domain and DNS records in `ddns/conf.json`.
+
+> **Note:** The desired URL must be either the root domain or a subdomain.
+
 ## Local Development
 
 Securely prompt and export the Porkbun API credentials in your current terminal session (this hides keystrokes and avoids writing secrets to shell history):
@@ -20,8 +26,6 @@ export PORKBUN_API_KEY
 read -rsp "Enter Porkbun Secret API Key: " PORKBUN_SECRET_API_KEY && echo
 export PORKBUN_SECRET_API_KEY
 ```
-
-Configure your domain and DNS records in `ddns/conf.json`.
 
 Create and set up the virtual environment:
 ```bash
@@ -56,7 +60,7 @@ shiv -c syncrecords -o syncrecords.pyz .
 ```
 
 ### 3. Commit and Push Changes
-Commit and push the updated changes to the `main` branch via IDE integration. 
+Commit and push the updated changes to the `main` branch.
 
 ### 4. Tag the Version and Push Tag
 ```bash
@@ -70,9 +74,6 @@ git push origin v4.21
 3. Set Release title: **`v4.21`**.
 4. Drag and drop the generated **`syncrecords.pyz`** file into the *"Attach binaries by dropping them here or selecting them"* section.
 5. Click **Publish release**.
-
-## Limitations
-The desired URL must be either the root domain, or a subdomain.
 
 ## Credits
 Inspired by [abstractionmage/unofficial-porkbun-ddns-python](https://github.com/abstractionmage/unofficial-porkbun-ddns-python)
