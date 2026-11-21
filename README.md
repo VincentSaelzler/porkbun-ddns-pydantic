@@ -75,5 +75,21 @@ git push origin v4.21
 4. Drag and drop the generated **`syncrecords.pyz`** file into the *"Attach binaries by dropping them here or selecting them"* section.
 5. Click **Publish release**.
 
+## Production Deployment
+
+On your target production server, download the standalone release binary directly from GitHub Releases:
+
+```bash
+# Download the specific release binary (replace v4.21 with desired version)
+curl -LO https://github.com/VincentSaelzler/porkbun-ddns-pydantic/releases/download/v4.21/syncrecords.pyz
+
+# Make it executable
+chmod +x syncrecords.pyz
+```
+
+The executable can be placed in a system path (such as `/usr/local/bin/syncrecords`) and invoked on a timer (e.g., via a systemd service and timer). 
+
+> **Note on Credentials:** In production, credentials should be supplied via systemd credentials (`PORKBUN_API_KEY` and `PORKBUN_SECRET_API_KEY`), which `loadcredential` automatically loads before falling back to environment variables. Setting up and provisioning systemd credentials or unit files is outside the scope of this repository.
+
 ## Credits
 Inspired by [abstractionmage/unofficial-porkbun-ddns-python](https://github.com/abstractionmage/unofficial-porkbun-ddns-python)
