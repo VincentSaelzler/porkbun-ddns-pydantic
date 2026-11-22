@@ -91,5 +91,13 @@ The executable can be placed in a system path (such as `/usr/local/bin/syncrecor
 
 > **Note on Credentials:** In production, credentials should be supplied via systemd credentials (`PORKBUN_API_KEY` and `PORKBUN_SECRET_API_KEY`), which `loadcredential` automatically loads before falling back to environment variables. Setting up and provisioning systemd credentials or unit files is outside the scope of this repository.
 
+## Architecture Compatibility
+
+The generated `.pyz` executable is not cross-architecture portable. For the binary to run successfully, the target machine's CPU architecture (e.g., x86_64 vs. ARM64) and Python version must match the machine where it was built with Shiv.
+
+**For example, a release binary built on an x86_64 machine will not run on an ARM-based device like a Raspberry Pi.**
+
+If you are running this on a Raspberry Pi (or any different architecture), the recommended approach is to build the project using Shiv directly on the target device itself, rather than trying to adapt or tailor a `.pyz` built on a mismatched machine.
+
 ## Credits
 Inspired by [abstractionmage/unofficial-porkbun-ddns-python](https://github.com/abstractionmage/unofficial-porkbun-ddns-python)
